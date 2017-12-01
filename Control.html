@@ -1,0 +1,226 @@
+<html>
+<head>
+<title> Process Control </title>
+
+</head>
+<body>
+
+<div class="Controls">
+<script>
+function changeTemplate(t){
+var mytemplate = document.getElementById("mytemplate");
+mytemplate.innerHTML = '<object id="ReturnObject" type="text/html" onload=UpdateControls() data=' + t + ' width="100%" height="400px"></object>';
+}
+
+function VarUrl(){
+  var mytextbox = document.getElementById("DeviceUrl");
+  t = mytextbox.value;
+  Url = "http://" + t ;
+  var mytextbox2 = document.getElementById("VariUrl");
+  t = mytextbox2.value;
+  Url += t;
+  changeTemplate(Url);
+  var mytextRequest = document.getElementById( "RequestSent");
+  mytextRequest.innerHTML = Url;
+}
+
+function S1On(){
+  var mytextbox = document.getElementById("DeviceUrl");
+  t = mytextbox.value;
+  Url = "http://" + t + "/s1on";
+  changeTemplate(Url);
+  var mytextRequest = document.getElementById( "RequestSent");
+  mytextRequest.innerHTML = Url;
+}
+
+function S1Off(){
+  var mytextbox = document.getElementById("DeviceUrl");
+  t = mytextbox.value;
+  Url = "http://" + t + "/s1off";
+  changeTemplate(Url);
+  var mytextRequest = document.getElementById( "RequestSent");
+  mytextRequest.innerHTML = Url;
+}
+
+function S2On(){
+  var mytextbox = document.getElementById("DeviceUrl");
+  t = mytextbox.value;
+  Url = "http://" + t + "/s2on";
+  changeTemplate(Url);
+  var mytextRequest = document.getElementById( "RequestSent");
+  mytextRequest.innerHTML = Url;
+}
+
+function S2Off(){
+  var mytextbox = document.getElementById("DeviceUrl");
+  t = mytextbox.value;
+  Url = "http://" + t + "/s2off";
+  changeTemplate(Url);
+  var mytextRequest = document.getElementById( "RequestSent");
+  mytextRequest.innerHTML = Url;
+}
+
+function S3On(){
+  var mytextbox = document.getElementById("DeviceUrl");
+  t = mytextbox.value;
+  Url = "http://" + t + "/s3on";
+  changeTemplate(Url);
+  var mytextRequest = document.getElementById( "RequestSent");
+  mytextRequest.innerHTML = Url;
+}
+
+function S3Off(){
+  var mytextbox = document.getElementById("DeviceUrl");
+  t = mytextbox.value;
+  Url = "http://" + t + "/s3off";
+  changeTemplate(Url);
+  var mytextRequest = document.getElementById( "RequestSent");
+  mytextRequest.innerHTML = Url;
+}
+
+function S4On(){
+  var mytextbox = document.getElementById("DeviceUrl");
+  t = mytextbox.value;
+  Url = "http://" + t + "/s4on";
+  changeTemplate(Url);
+  var mytextRequest = document.getElementById( "RequestSent");
+  mytextRequest.innerHTML = Url;
+}
+
+function S4Off(){
+  var mytextbox = document.getElementById("DeviceUrl");
+  t = mytextbox.value;
+  Url = "http://" + t + "/s4off";
+  changeTemplate(Url);
+  var mytextRequest = document.getElementById( "RequestSent");
+  mytextRequest.innerHTML = Url;
+}
+
+function PumpOn(){
+  var mytextbox = document.getElementById("DeviceUrl");
+  t = mytextbox.value;
+  Url = "http://" + t + "/pumpon";
+  changeTemplate(Url);
+  var mytextRequest = document.getElementById( "RequestSent");
+  mytextRequest.innerHTML = Url;
+}
+
+function PumpOff(){
+  var mytextbox = document.getElementById("DeviceUrl");
+  t = mytextbox.value;
+  Url = "http://" + t + "/pumpoff";
+  changeTemplate(Url);
+  var mytextRequest = document.getElementById( "RequestSent");
+  mytextRequest.innerHTML = Url;
+}
+
+function VacOn(){
+  var mytextbox = document.getElementById("DeviceUrl");
+  t = mytextbox.value;
+  Url = "http://" + t + "/vacon";
+  changeTemplate(Url);
+  var mytextRequest = document.getElementById( "RequestSent");
+  mytextRequest.innerHTML = Url;
+}
+
+function VacOff(){
+  var mytextbox = document.getElementById("DeviceUrl");
+  t = mytextbox.value;
+  Url = "http://" + t + "/vacoff";
+  changeTemplate(Url);
+  var mytextRequest = document.getElementById( "RequestSent");
+  mytextRequest.innerHTML = Url;
+}
+
+function Servo1(){
+  var mytextbox = document.getElementById("DeviceUrl");
+  t = mytextbox.value;
+  var myrange = document.getElementById("RangeServo1");
+  pos = myrange.value;
+  Url = "http://" + t + "/servo1?pos=" + pos;
+  var mytextRequest = document.getElementById( "RequestSent");
+  changeTemplate(Url);
+  mytextRequest.innerHTML = Url;
+
+}
+
+function Servo2(){
+  var mytextbox = document.getElementById("DeviceUrl");
+  t = mytextbox.value;
+  var myrange = document.getElementById("RangeServo2");
+  pos = myrange.value;
+  Url = "http://" + t + "/servo2?pos=" + pos;
+  var mytextRequest = document.getElementById( "RequestSent");
+  changeTemplate(Url);
+  mytextRequest.innerHTML = Url;
+}
+
+function TensOn(){
+ var mytextbox = document.getElementById("DeviceUrl");
+  t = mytextbox.value;
+  var mytextbox = document.getElementById("M");
+  m = mytextbox.value;
+  var mytextbox = document.getElementById("F");
+  f = mytextbox.value;
+  var mytextbox = document.getElementById("PW");
+  pw = mytextbox.value;
+  Url = "http://" + t + "/tenson?m=" + m +"&f=" + f + "&pw=" + pw;
+  var mytextRequest = document.getElementById( "RequestSent");
+  changeTemplate(Url);
+  mytextRequest.innerHTML = Url;
+}
+
+function TensOff(){
+  var mytextbox = document.getElementById("DeviceUrl");
+  t = mytextbox.value;
+  Url = "http://" + t + "/tensoff";
+  changeTemplate(Url);
+  var mytextRequest = document.getElementById( "RequestSent");
+  mytextRequest.innerHTML = Url;
+}
+
+function UpdateControls(){
+  var returntxt = document.getElementById("notify");
+  returntxt.innerHTML = Date();
+}
+function Update(){
+var mp=document.getElementById("M").value * 40
+document.getElementById("MP").value = mp
+document.getElementById("ModValue").innerHTML = "Modulation("+ document.getElementById("M").value+")"
+var fhz=document.getElementById("F").value
+fhz=Math.pow(1.034,fhz)
+document.getElementById("FH").value=fhz
+document.getElementById("FreqValue").innerHTML="Frequency("+ document.getElementById("F").value+")"
+var pwp=document.getElementById("PW").value / 256 * 100
+document.getElementById("PWP").value=pwp
+document.getElementById("PWValue").innerHTML="Pulse Width("+ document.getElementById("PW").value+")"
+
+}
+</script>
+
+Enter URL of Device Here: <input type="text" value="Enter Url of device here" id="DeviceUrl"><br>
+Above Url plus <input type="text" id="VariUrl" value="variable text to append"> &nbsp <input type="button" onclick=VarUrl() value="request variable url"> <br>
+<p id="RequestSent">Complete Url Request sent</p><br>
+<input type="button" onclick=S1On() value="S1 On"><input type="button" onclick=S1Off() value="S1 Off">  &nbsp
+<input type="button" onclick=S2On() value="S2 On"><input type="button" onclick=S2Off() value="S2 Off"> &nbsp
+<input type="button" onclick=S3On() value="S3 On"><input type="button" onclick=S3Off() value="S3 Off"> &nbsp
+<input type="button" onclick=S4On() value="S4 On"><input type="button" onclick=S4Off() value="S4 Off"><br>
+<input type="button" onclick=PumpOn() value="Pump On"><input type="button" onclick=PumpOff() value="Pump Off">  &nbsp
+<input type="button" onclick=VacOn() value="Vac On"><input type="button" onclick=VacOff() value="Vac Off"><br>
+<input type="range" onmouseup=Servo1() value="90" min="0" max="180" step="1" id="RangeServo1">
+<input type="range" onmouseup=Servo2() value="90" min="0" max="180" step="1" id="RangeServo2"> <br>
+<input type="button" onclick=TensOn() value="Tens On"><input type="button" onclick=TensOff() value="Tens Off"><br><p id="ModValue">
+Modulation (0 to 255)</p><input type="range" value="128" min="0" max="255" step="1" id="M" onchange=Update()>modulation period in ms<input type="textbox" id="MP">
+<br><p id="FreqValue">Frequency(0 to 255)</p><input type="range" value="128" min="0" max="255" step="1"  id="F" onchange=Update()>frequency in Hz<input type="textbox" id="FH">
+<br><p id="PWValue">Pulse Width(0 to 255)</p><input type="range" value="128" min="0" max="255" step="1" id="PW" onchange=Update()>Pulse width in percent<input type="textbox" id="PWP">
+
+<p id="mytemplate" onchange=rxreturn()></p><br>
+<p id="notify"></p>
+
+
+
+
+</div>
+</body>
+
+</html>
