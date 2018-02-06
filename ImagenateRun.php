@@ -1,4 +1,9 @@
 <?php
+include "Access.php";
+if(!accessgrant($_POST['pass'])){
+  die("no access");
+}
+
 session_start();
 //Load file
 $filepath = $_SESSION['uploadfile'];

@@ -6,7 +6,8 @@ $uploadfile = './uploads/'.$_POST['FileName'].'.json';
 $_SESSION['uploadfile'] = $uploadfile;
 $_SESSION['DeviceAddress']=$_POST['deviceaddress'];
 }
-
+print_r($_POST);
+print_r($_FILES);
 if(isset($_POST['mySelect'])){
 	if($_POST['mySelect']!='NOFILE'){
 		$uploadfile = './uploads/'.$_POST['mySelect'];
