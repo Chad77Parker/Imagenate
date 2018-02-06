@@ -1,7 +1,14 @@
+<?php
+include "Access.php";
+if(!accessgrant($_POST['pass'])){
+  die("no access");
+}
+?>
 <html>
 <head>
 <title>Imagenate</title>
 <link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah" rel="stylesheet">
+<link rel="stylesheet" type="text/css" media="all" href="styles.css" />
 <link rel="stylesheet" type="text/css"
           href="https://fonts.googleapis.com/css?family=Tangerine">
     <style>
@@ -29,7 +36,7 @@
       }
 
       #controls{
-        position:absolute; bottom:10%; left:20%;
+        position:absolute; top:10%; left:20%;
         z-index:6;
         width:80%;
         height:15%;
@@ -47,7 +54,7 @@
       #background{
         position:absolute;
 	      background: pink no-repeat fixed center;
-	       background-image: url( img/Backgrounds/BlackBG.jpg);
+	       background-image: url( img/Backgrounds/WhiteBG.jpg);
          background-repeat: no-repeat;
          background-attachment: fixed;
          background-size: contain;
@@ -61,52 +68,58 @@
       }
 
     </style>
-<script>
-function submitMe(obj){
-  if(obj.value == "Create New File"){
-   document.getElementById('frm').action = 'jsonconstruct.php'
-  }else if(obj.value == "Upload images"){
-   document.getElementById('frm').action = 'uploadimages.php'
-  }else{
-   document.getElementById('frm').action = 'CommitUpload.php'
-  }
- document.getElementById('frm').submit();
-}
-</script>
 </head>
 <body>
 <div id="Title">
-Welcome to Imagenate
+Image Upload
 </div>
 <div id="background"></div>
 <div id="controls">
 <!-- The data encoding type, enctype, MUST be specified as below -->
-<form enctype="multipart/form-data" action="CommitUpload.php" method="POST" id="frm">
-    <!-- MAX_FILE_SIZE must precede the file input field -->
-    <input type="hidden" name="MAX_FILE_SIZE" value="3000000" />
-    <!-- Name of input element determines name in $_FILES array -->
-    <input type=""text" value="password" name="pass"/><br>
-    <input type="text" value="Enter device ip address" name="deviceaddress" /><br>
+<form id="upload" action="commitimageupload.php" method="POST" enctype="multipart/form-data">
+
+<fieldset>
+<legend>HTML File Upload</legend>
+
+<input type="hidden" id="MAX_FILE_SIZE" name="MAX_FILE_SIZE" value="3000000" />
+
+<div>
+	<label for="fileselect">Files to upload:</label>
+  <input type="text" value="New upload folder" name="NewUploadFolder" id="NewUploadFolder"> &nbsp Or <br>
     <select id="mySelect" name="mySelect">
-    <option value="NOFILE">Select existing file</option>
+    <option value="NOFILE">Select folder to upload to</option>
 <?php
-$files = array_slice(scandir('uploads'), 2);
-foreach($files as $value){
-echo '<option value="'.$value.'">'.$value.'</option>';
-}    
+include "Ccrypt.php";
+$dirs = array_slice(scandir('img'), 2);
+foreach($dirs as $value){
+  if($value !='Backgrounds'){
+    echo '<option value="'.$value.'">'.decryptfilename($value).'</option>';
+  }
+}
+echo '</select><br>';
 
 ?>
+  <input type="file" id="fileselect" name="userfile[]" multiple="multiple" />
+</div>
+	<div id="filedrag">or drop files here</div>
 
-    </select><br>
-    
-    <input type="submit" value="Send File and Device IP" /> <br>
-    
-    <input type="button" value="Create New File" onClick="submitMe(this)"><br>
-    
-    <input type="button" value="Upload images" onClick="submitMe(this)"><br>
 
-    <input type="button" value="Control Test Page" onClick="submitMe(this)">
+
+
+<div id="submitbutton">
+	<button type="submit">Upload Files</button>
+</div>
+
+</fieldset>
 
 </form>
+
+<div id="progress"></div>
+
+<div id="messages">
+<p>Status Messages</p>
 </div>
+
+</div>
+<script src="filedrag.js"></script>
 </body>

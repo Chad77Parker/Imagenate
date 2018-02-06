@@ -1,3 +1,9 @@
+<?php
+include "Access.php";
+if(!accessgrant($_POST['pass'])){
+  die("no access");
+}
+?>
 <html>
 <head>
 <title>JSON Constructor</title>
@@ -97,6 +103,7 @@ SV1<input type="range" id="Sv1_0" name="Sv1[0]" value="90" max="180">SV2<input t
 
 
 <?php
+include 'ccrypt.php';
 $dirs = array_slice(scandir('img'), 2);
 $f = 0;
 foreach($dirs as $value){
@@ -109,7 +116,7 @@ foreach($dirs as $value){
       $i++;
     }
     $f++;
-    echo '<option value="'.$value.'">'.$value.'</option>';
+    echo '<option value="'.$value.'">'.decryptfilename($value).'</option>';
   }
 }
 echo '</select><br>';
@@ -123,12 +130,14 @@ while(count($images)>$f){
     $image_name = $images[$f][$i];
     $style = "thumb";
     $image_thumb = $image_path.'/'.$style.'/'.$image_name;
-if(!file_exists($image_thumb))
-        $image_thumb = "image.php?image_name=$image_name&style=$style&image_path=$image_path";
+    $src = 'imagedecode.php?filename='.$image_thumb;
+if(!file_exists($image_thumb)){
+        $src = "image.php?image_name=$image_name&style=$style&image_path=$image_path";
      // only if file doesn't exist call the on-the-fly creating file
-
-    echo '<img src="'.$image_thumb;
-    echo '" onclick=UpdateText('.$f.','.$i.',"'.$image_path.'/'.$image_name.'","'.$image_path.'/'.$style.'/'.$image_name.'") id="image'.$f.$i.'" style="width:20%;height:20%;display:inline;border-style:hidden;border-width:5px;border-color:transparent">';
+    }
+    echo '<img src="'.$src;
+    echo '" onclick=UpdateText('.$f.','.$i.',"imagedecode.php?filename='.$image_path.'/'.$image_name.'","';
+    echo $image_path.'/'.$style.'/'.$image_name.'") id="image'.$f.$i.'" style="width:20%;height:20%;display:inline;border-style:hidden;border-width:5px;border-color:transparent">';
     }
     $i++;
  }
@@ -399,7 +408,7 @@ var myimg = document.getElementById(NewImg)
 myimg.style.border = "5px solid blue"
 CurrentImg = NewImg
 document.getElementById("Image_"+CurrentRecord).value = p
-document.getElementById("pic_"+CurrentRecord).src = t
+document.getElementById("pic_"+CurrentRecord).src = "imagedecode.php?filename="+t
 }
 
 function UpdateRecords(rec){
