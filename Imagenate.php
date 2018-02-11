@@ -38,6 +38,9 @@
         font-size: 24px;
         text-shadow: 4px 4px 4px #aaa;
       }
+      #hidedisplay{
+        display:none;
+      }
       #output{
         position:absolute; top:15%; left:0;
         z-index:6;
@@ -47,7 +50,7 @@
       #background{
         position:absolute;
 	      background: pink no-repeat fixed center;
-	       background-image: url( img/Backgrounds/BlackBG.jpg);
+	       background-image: url( img/Backgrounds/scene1.jpg);
          background-repeat: no-repeat;
          background-attachment: fixed;
          background-size: contain;
@@ -72,6 +75,18 @@ function submitMe(obj){
   }
  document.getElementById('frm').submit();
 }
+function VerifyPass(){
+  pass = document.getElementById('pass');
+  d = new Date();
+  n = pass.value;
+  s = "destiny"+d.getFullYear()
+  v = n.search(s);
+  if(v<0){
+  document.getElementById("hidedisplay").style.display="none";
+}else{
+   document.getElementById("hidedisplay").style.display="block";
+}
+}
 </script>
 </head>
 <body>
@@ -85,7 +100,8 @@ Welcome to Imagenate
     <!-- MAX_FILE_SIZE must precede the file input field -->
     <input type="hidden" name="MAX_FILE_SIZE" value="3000000" />
     <!-- Name of input element determines name in $_FILES array -->
-    <input type=""text" value="password" name="pass"/><br>
+    <input type="text" value="password" id="pass" name="pass" oninput="VerifyPass()"/><br>
+    <div id="hidedisplay">
     <input type="text" value="Enter device ip address" name="deviceaddress" /><br>
     <select id="mySelect" name="mySelect">
     <option value="NOFILE">Select existing file</option>
@@ -106,7 +122,7 @@ echo '<option value="'.$value.'">'.$value.'</option>';
     <input type="button" value="Upload images" onClick="submitMe(this)"><br>
 
     <input type="button" value="Control Test Page" onClick="submitMe(this)">
-
+</div>
 </form>
 </div>
 </body>
