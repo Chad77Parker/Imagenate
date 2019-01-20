@@ -1,13 +1,12 @@
 <?php
+include "Access.php";
+if(!accessgrant($_POST['pass'])){
+  die("no access");
+}
 session_start();
 if (isset($_POST['FileName'])){
-
-$uploadfile = './uploads/'.$_POST['FileName'].'.json';
-$_SESSION['uploadfile'] = $uploadfile;
-$_SESSION['DeviceAddress']=$_POST['deviceaddress'];
+   $uploadfile = './uploads/'.$_POST['FileName'].'.json';
 }
-print_r($_POST);
-print_r($_FILES);
 if(isset($_POST['mySelect'])){
 	if($_POST['mySelect']!='NOFILE'){
 		$uploadfile = './uploads/'.$_POST['mySelect'];
@@ -16,10 +15,8 @@ if(isset($_POST['mySelect'])){
 //load filename to session
 $_SESSION['uploadfile'] = $uploadfile;
 $_SESSION['DeviceAddress']=$_POST['deviceaddress'];
+$_SESSION['pass']=$_POST['pass'];
 
-
-
-if(isset($_FILES) && !(isset($_POST['FileName']))){
 echo '
 
 <head>
@@ -86,27 +83,14 @@ echo '
     </style>
     </head><body>';
 
-if(!(isset($_POST['mySelect']))){
-if (strripos($_FILES['userfile']['name'],".json") !== false){
-	if (move_uploaded_file($_FILES['userfile']['tmp_name'], $uploadfile)) {
-  echo'<div id="controls">File is valid, and was successfully uploaded.
-
-             Click <a href="ImagenateRun.php">here</a> to RUN
-             </div><div id="background"></div>';
-	} else {
-    		echo "Possible file upload attack!\n </div>";
-	}
-} else {
-echo '<div id="controls">Not a JSON file </div>';
-}
-}else{
+if(isset($_FILES) && !(isset($_POST['FileName']))){
+if(isset($_POST['mySelect'])){
 echo'<div id="controls">File is valid, ready to go.
-
              Click <a href="ImagenateRun.php">here</a> to RUN
              </div><div id="background"></div>';
+}
+}
 
-}
-}
 if(isset($_POST['FileName'])){
  echo '
 <head>
@@ -178,7 +162,8 @@ if(isset($_POST['FileName'])){
 
 $Level = "";
 $FirstStep = True;
-$s1=$s2=$s3=$s4=$vac=$pump=$tens=$mod=$freq=$pulse=$sv1=$sv2=$txt=$loop=$img="";
+$s1=$s2=$s3=$s4=$vac=$pump=$tens='off';
+$mod=$freq=$pulse=$sv1=$sv2=$txt=$loop=$img="";
 if (isset($_POST['FileName'])){
 
      $myString = '{"NAME":"'.$_POST['Program'].'", "LEVELS":[';
@@ -204,50 +189,49 @@ while ($StepCount < count($_POST['Level'])){
   }
 
   if (isset($_POST['S1'][$StepCount])){
-      if ($s1 != "on"){
+    if($StepCount==0||$_POST['S1'][$StepCount]!=$_POST['S1'][$StepCount-1]){
+      if ($_POST['S1'][$StepCount]== "true"){
             $myString = $myString.'"S1":"ON", ';
             $s1 = "on";
+       }else{
+        $myString = $myString.'"S1":"OFF", ';
+        $s1 = "off";
        }
-  }else {
-    if ($s1 != "off"){
-      $myString = $myString.'"S1":"OFF", ';
-      $s1 = "off";
     }
-  }
+      }
   if (isset($_POST['S2'][$StepCount])){
-      if ($s2 != "on"){
+    if($StepCount==0||$_POST['S2'][$StepCount]!=$_POST['S2'][$StepCount-1]){
+      if ($_POST['S2'][$StepCount]== "true"){
             $myString = $myString.'"S2":"ON", ';
-            $s2 = "on";
+            $s1 = "on";
+       }else{
+        $myString = $myString.'"S2":"OFF", ';
+        $s1 = "off";
        }
-  }else {
-    if ($s2 != "off"){
-      $myString = $myString.'"S2":"OFF", ';
-      $s2 = "off";
     }
   }
-  if (isset($_POST['S3'][$StepCount])){
-      if ($s3 != "on"){
+    if (isset($_POST['S3'][$StepCount])){
+      if($StepCount==0||$_POST['S3'][$StepCount]!=$_POST['S3'][$StepCount-1]){
+      if ($_POST['S3'][$StepCount]== "true"){
             $myString = $myString.'"S3":"ON", ';
-            $s3 = "on";
+            $s1 = "on";
+       }else{
+        $myString = $myString.'"S3":"OFF", ';
+        $s1 = "off";
        }
-  }else {
-    if ($s3 != "off"){
-      $myString = $myString.'"S3":"OFF", ';
-      $s3 = "off";
     }
   }
-  if (isset($_POST['S4'][$StepCount])){
-      if ($s4 != "on"){
+    if (isset($_POST['S4'][$StepCount])){
+      if($StepCount==0||$_POST['S4'][$StepCount]!=$_POST['S4'][$StepCount-1]){
+      if ($_POST['S4'][$StepCount]== "true"){
             $myString = $myString.'"S4":"ON", ';
-            $s4 = "on";
+            $s1 = "on";
+       }else{
+        $myString = $myString.'"S4":"OFF", ';
+        $s1 = "off";
        }
-  }else {
-    if ($s4 != "off"){
-      $myString = $myString.'"S4":"OFF", ';
-      $s4 = "off";
-    }
+      }
   }
-
   if ($_POST['Sv1'][$StepCount]!= $sv1){
     $myString = $myString.'"SV1":"'.$_POST['Sv1'][$StepCount].'", ';
      $sv1 = $_POST['Sv1'][$StepCount];
@@ -260,61 +244,64 @@ while ($StepCount < count($_POST['Level'])){
     $myString = $myString.'"TXT":"'.$_POST['Notice'][$StepCount].'", ';
     $txt = $_POST['Notice'][$StepCount];
   }
-   if (isset($_POST['Vac'][$StepCount])){
-       if ($vac != "on"){
+     if (isset($_POST['Vac'][$StepCount])){
+       if($StepCount==0||$_POST['Vac'][$StepCount]!=$_POST['Vac'][$StepCount-1]){
+      if ($_POST['Vac'][$StepCount]== "true"){
             $myString = $myString.'"VAC":"ON", ';
-            $vac = "on";
+            $s1 = "on";
+       }else{
+        $myString = $myString.'"VAC":"OFF", ';
+        $s1 = "off";
        }
-   }else {
-    if ($vac != "off"){
-      $myString = $myString.'"VAC":"OFF", ';
-      $vac = "off";
-    }
+       }
   }
 
-  if (isset($_POST['Pump'][$StepCount])){
-     if ($pump != "on"){
+    if (isset($_POST['Pump'][$StepCount])){
+      if($StepCount==0||$_POST['Pump'][$StepCount]!=$_POST['Pump'][$StepCount-1]){
+      if ($_POST['Pump'][$StepCount]== "true"){
             $myString = $myString.'"PUMP":"ON", ';
-            $pump = "on";
+            $s1 = "on";
+       }else{
+        $myString = $myString.'"PUMP":"OFF", ';
+        $s1 = "off";
        }
-    }else {
-    if ($pump != "off"){
-      $myString = $myString.'"PUMP":"OFF", ';
-      $pump = "off";
-    }
+      }
   }
-  if (isset($_POST['Tens'][$StepCount])){
-       $tensupdate = false;
-       if ($tens != "on"){
-            $tensupdate = true;
-            $tens = "on";
-
-   }
+    $tensupdate=false;
 
   if ($_POST['Mod'][$StepCount]!= $mod){
-    $myString = $myString.'"MOD":"'.$_POST['Mod'][$StepCount].'", ';
      $mod = $_POST['Mod'][$StepCount];
      $tensupdate = true;
   }
   if ($_POST['Freq'][$StepCount]!= $freq){
-    $myString = $myString.'"FREQ":"'.$_POST['Freq'][$StepCount].'", ';
      $freq = $_POST['Freq'][$StepCount];
      $tensupdate = true;
   }
   if ($_POST['Pulse'][$StepCount]!= $pulse){
-    $myString = $myString.'"PULSE":"'.$_POST['Pulse'][$StepCount].'", ';
      $pulse = $_POST['Pulse'][$StepCount];
      $tensupdate = true;
   }
+  if (isset($_POST['Tens'][$StepCount])){
+    if($StepCount==0||$_POST['S1'][$StepCount]!=$_POST['S1'][$StepCount-1]){
+      if ($_POST['Tens'][$StepCount]== "true"){
+            $tensupdate=true;
+            $tens = "on";
+       }else{
+        $tensupdate = true;
+        $tens = "off";
+       }
+      }
+  }
+
   if($tensupdate ){
-      $myString = $myString.'"TENS":"ON", ';
+      if($tens=='on'){$myString = $myString.'"TENS":"ON", ';}
+      else{$myString = $myString.'"TENS":"OFF", ';}
+      $myString = $myString.'"MOD":"'.$_POST['Mod'][$StepCount].'", ';
+      $myString = $myString.'"FREQ":"'.$_POST['Freq'][$StepCount].'", ';
+      $myString = $myString.'"PULSE":"'.$_POST['Pulse'][$StepCount].'", ';
   }
-  }else {
-    if ($tens != "off"){
-      $myString = $myString.'"TENS":"OFF", ';
-      $tens = "off";
-    }
-  }
+
+
   if ($_POST['Loop'][$StepCount]!= $loop){
     $myString = $myString.'"LOOP":"'.$_POST['Loop'][$StepCount].'", ';
      $loop = $_POST['Loop'][$StepCount];

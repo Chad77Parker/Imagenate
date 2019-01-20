@@ -66,6 +66,19 @@ if(!accessgrant($_POST['pass'])){
 	      left:0;
 	      text-align:center;
       }
+      #wrapper{
+        position:absolute;
+        top:45%;
+        display:flex;
+        z-index:6;
+      }
+      #progress{
+        flex: 0 0 30%;
+      }
+      #messages{
+        flex: 1;
+      }
+
 
     </style>
 </head>
@@ -75,6 +88,7 @@ Image Upload
 </div>
 <div id="background"></div>
 <div id="controls">
+<input type="button" value="Return Home" onclick="document.forms[1].submit();"> <br>
 <!-- The data encoding type, enctype, MUST be specified as below -->
 <form id="upload" action="commitimageupload.php" method="POST" enctype="multipart/form-data">
 
@@ -84,7 +98,7 @@ Image Upload
 <input type="hidden" id="MAX_FILE_SIZE" name="MAX_FILE_SIZE" value="3000000" />
 
 <div>
-	<label for="fileselect">Files to upload:</label>
+	<label for="fileselect">New Folder to upload files to:</label>
   <input type="text" value="New upload folder" name="NewUploadFolder" id="NewUploadFolder"> &nbsp Or <br>
     <select id="mySelect" name="mySelect">
     <option value="NOFILE">Select folder to upload to</option>
@@ -114,12 +128,17 @@ echo '</select><br>';
 
 </form>
 
-<div id="progress"></div>
 
+
+</div>
+<form action="imagenate.php" method="post" id="returnhomeform">
+<input type="hidden" name="pass" value="<?php echo $_POST['pass'];?>">
+</form>
+<div id="wrapper">
+<div id="progress"></div>
 <div id="messages">
 <p>Status Messages</p>
 </div>
-
 </div>
 <script src="filedrag.js"></script>
 </body>

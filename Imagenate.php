@@ -66,10 +66,15 @@
     </style>
 <script>
 function submitMe(obj){
+
   if(obj.value == "Create New File"){
    document.getElementById('frm').action = 'jsonconstruct.php'
   }else if(obj.value == "Upload images"){
    document.getElementById('frm').action = 'uploadimages.php'
+  }else if(obj.value == "Update Slideshow"){
+   document.getElementById('frm').action = 'slideshow.php'
+  }else if(obj.value == "Control Test Page"){
+   document.getElementById('frm').action = 'Control.html'
   }else{
    document.getElementById('frm').action = 'CommitUpload.php'
   }
@@ -87,9 +92,10 @@ function VerifyPass(){
    document.getElementById("hidedisplay").style.display="block";
 }
 }
+
 </script>
 </head>
-<body>
+<body onload=VerifyPass()>
 <div id="Title">
 Welcome to Imagenate
 </div>
@@ -100,7 +106,14 @@ Welcome to Imagenate
     <!-- MAX_FILE_SIZE must precede the file input field -->
     <input type="hidden" name="MAX_FILE_SIZE" value="3000000" />
     <!-- Name of input element determines name in $_FILES array -->
-    <input type="text" value="password" id="pass" name="pass" oninput="VerifyPass()"/><br>
+    <input type="password" id="pass" value="<?php
+include "Access.php";
+if(isset($_POST['pass'])){
+if(accessgrant($_POST['pass'])){
+  echo $_POST['pass'];
+}
+}
+?>" name="pass" oninput="VerifyPass()" autofocus /><br>
     <div id="hidedisplay">
     <input type="text" value="Enter device ip address" name="deviceaddress" /><br>
     <select id="mySelect" name="mySelect">
@@ -120,6 +133,8 @@ echo '<option value="'.$value.'">'.$value.'</option>';
     <input type="button" value="Create New File" onClick="submitMe(this)"><br>
     
     <input type="button" value="Upload images" onClick="submitMe(this)"><br>
+    
+    <input type="button" value="Update Slideshow" onClick="submitMe(this)"><br>
 
     <input type="button" value="Control Test Page" onClick="submitMe(this)">
 </div>
