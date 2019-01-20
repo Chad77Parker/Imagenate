@@ -1,10 +1,18 @@
 <?php
-include "Access.php";
-if(!accessgrant($_POST['pass'])){
-  die("no access");
-}
-
 session_start();
+include "Access.php";
+if(isset($_POST['pass'])){
+  $pass = $_POST['pass'];
+}
+if(isset($_SESSION['pass'])){
+  $pass = $_SESSION['pass'];
+}
+if(isset($pass)){
+  if(!accessgrant($pass)){
+  die("no grant access");
+}
+}else{die("no pass access");}
+
 //Load file
 $filepath = $_SESSION['uploadfile'];
 if (file_exists($filepath)) {
@@ -17,6 +25,7 @@ if (file_exists($filepath)) {
 ?>
 <html>
 <head>
+<script src="http://code.responsivevoice.org/responsivevoice.js"></script>
 <link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah" rel="stylesheet">
 <link rel="stylesheet" type="text/css"
           href="https://fonts.googleapis.com/css?family=Tangerine">
@@ -35,7 +44,7 @@ if (file_exists($filepath)) {
       }
 
       #Notice{
-        position:absolute; bottom:0; left:0;
+        position:absolute; top:88%; left:0;
  	      width:100%;
         height:12%;
         text-align:center;
@@ -62,10 +71,11 @@ if (file_exists($filepath)) {
         display:none;
       }
       #outputobjects{
-        position:absolute; top:100%; left:0;
+        position:absolute; top:0%; left:0;
         z-index:6;
         width:100%;
         height:30%;
+        visibility:hidden;
       }
       #background{
         position:absolute;
@@ -82,21 +92,35 @@ if (file_exists($filepath)) {
 	      left:0;
 	      text-align:center;
       }
+      #myProgress {
+      width: 100%;
+      background-color: grey;
+      }
 
+      #myBar {
+       width: 1%;
+       height: 30px;
+       background-color: green;
+      }
     </style>
 <style>#hour{color:red}#min{color:green}#sec{color:blue}</style>
 
 <script type="text/javascript">
 var timerId
-var myJSON = <?php $myJSON = trim(preg_replace('/\s+/', ' ', $myJSON)); echo '\''.$myJSON.'\''; ?>
-
+var myJSON = <?php $myJSON = trim(preg_replace('/\s+/', ' ', $myJSON)); echo '\''.$myJSON.'\''; ?> ;
 var myObj = JSON.parse(myJSON)
+var DeviceIP =  <?php echo '\''.$_SESSION['DeviceAddress'].'\''; ?>;
+var requestHstack = []
+var PreviousTime
+
 function ShowControls(){
    document.getElementById("controls").style.display = "block"
 }
+
 function HideControls(){
    document.getElementById("controls").style.display = "none"
   }
+
 function ShowHideOutput(){
   var myDisplay = document.getElementById("output").style.display
   if (myDisplay == "block"){
@@ -105,72 +129,146 @@ function ShowHideOutput(){
     document.getElementById("output").style.display = "block"
   }
 }
-var DeviceIP =  <?php echo '\''.$_SESSION['DeviceAddress'].'\''; ?>
+
+function RequestHTML(){
+    var date = new Date()
+    PreviousTime = date.getTime()
+    if(requestHstack.length > 0){
+      clockStop()
+      var myReturn = document.getElementById("ReturnHTML");
+      myReturn.data =  requestHstack.shift()
+      console.log(myReturn.data)
+    }else{
+      var imageP
+      if(imageP==null){
+      if(!timerId){
+        PreviousTime = date.getTime()
+        console.log('previos time set to'+PreviousTime)
+        timerId = setTimeout(update, 1000)
+      }
+      }
+    }
+}
+
+function doc_keyUp(e) {
+        // this would test for whichever key is 32 and the ctrl key at the same time
+    switch (e.keyCode) {
+        case 32:
+                //on "space" go to next level
+                NextLevel();
+                break;
+        case 13:
+             //on "enter" toggle clock start/stop
+             if(timerId){
+               clockStop();
+             }else{clockStart();
+           }
+           break;
+        case 86:
+             // on "v" toggle voice on/off
+             document.getElementById("AudioOn").checked = !document.getElementById("AudioOn").checked;
+             if(document.getElementById("AudioOn").checked){
+             document.getElementById("Notice").style.display="none"
+             }else{
+                document.getElementById("Notice").style.display="block"
+             }
+             break;
+        case 72:
+             //on "h" toggle no hardware on/off
+             document.getElementById("NoHardware").checked = !document.getElementById("NoHardware").checked;
+             break;
+        case 79:
+             //on "o" toggle show output
+             ShowHideOutput();
+             break;
+        case 82:
+             // on "r" toggle repeat forever
+             document.getElementById("RepeatForever").checked = !document.getElementById("RepeatForever").checked;
+             break;
+        default:
+             //on anything else skip to next step
+             var date = new Date()
+             clockStop()
+             PreviousTime=date.getTime() - 3600000
+             update()
+             break;
+    }
+    
+}
+// register the handler
+document.addEventListener('keyup', doc_keyUp, false);
+
+function NextLevel(){
+        StepCount = 0
+        RepeatCount = 0
+        LevelCount = document.getElementById("LevelSelect" ).selectedIndex + 1
+        if(LevelCount>=myObj.LEVELS.length){LevelCount = 0}
+        document.getElementById("LevelSelect" ).selectedIndex = LevelCount
+        if(typeof myObj.LEVELS[LevelCount].STEPS[0].TXT !== 'undefined'){
+                  document.getElementById("Notice").innerHTML = myObj.LEVELS[LevelCount].STEPS[0].TXT
+                  if(document.getElementById("AudioOn").checked){responsiveVoice.speak(myObj.LEVELS[LevelCount].STEPS[StepCount].TXT, document.getElementById("ChooseVoice").value)}
+                  }
+        document.getElementById("background").style.backgroundImage = "url( "+myObj.LEVELS[LevelCount].STEPS[0].SRC+")"
+        nextImage.src = "url( "+myObj.LEVELS[LevelCount].STEPS[0].SRC+")"
+        ImageProgress()
+}
 
 function S1On(){
   document.getElementById("s1").checked = true
-  url = "http://" + DeviceIP + "/s1on";
-  var myReturn = document.getElementById("ReturnS1");
-  myReturn.data =  url
-
+  if(document.getElementById("NoHardware").checked != true){
+    requestHstack.push("http://" + DeviceIP + "/s1on")
+  }
 }
 
 function S1Off(){
   document.getElementById("s1").checked = false
-  url = "http://" + DeviceIP + "/s1off";
-  var myReturn = document.getElementById("ReturnS1");
-  myReturn.data =  url
-
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/s1off")
+}
 }
 
 function S2On(){
   document.getElementById("s2").checked = true
-  url = "http://" + DeviceIP + "/s2on";
-  var myReturn = document.getElementById("ReturnS2");
-  myReturn.data =  url
-
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/s2on")
+}
 }
 
 function S2Off(){
   document.getElementById("s2").checked = false
-  url = "http://" + DeviceIP + "/s2off";
-  var myReturn = document.getElementById("ReturnS2");
-  myReturn.data =  url
-
-}
+ if(document.getElementById("NoHardware").checked != true){
+   requestHstack.push("http://" + DeviceIP + "/s2off")
+  }
+  }
 
 function S3On(){
   document.getElementById("s3").checked = true
-  url = "http://" + DeviceIP + "/s3on";
-  var myReturn = document.getElementById("ReturnS3");
-  myReturn.data =  url
-
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/s3on")
+  }
 }
 
 function S3Off(){
   document.getElementById("s3").checked = false
-  url = "http://" + DeviceIP + "/s3off";
-  var myReturn = document.getElementById("ReturnS3");
-  myReturn.data =  url
-
-}
+ if(document.getElementById("NoHardware").checked != true){
+   requestHstack.push("http://" + DeviceIP + "/s30ff")
+ }
+ }
 
 function S4On(){
   document.getElementById("s4").checked = true
-  url = "http://" + DeviceIP + "/s4on";
-  var myReturn = document.getElementById("ReturnS4");
-  myReturn.data =  url
-
-}
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/s4on")
+ }
+ }
 
 function S4Off(){
   document.getElementById("s4").checked = false
-  url = "http://" + DeviceIP + "/s4off";
-  var myReturn = document.getElementById("ReturnS4");
-  myReturn.data =  url
-
-}
-
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/s4off")
+ }
+ }
+  
 function Mod(val){
   document.getElementById("mod").value = val
 }
@@ -185,16 +283,16 @@ function Pulse(val){
 
 function TensOn(){
   document.getElementById("tens").checked = true
-  url = "http://" + DeviceIP + "/tenson?m=" + document.getElementById("mod").value + "&f=" + document.getElementById("freq").value + "&p=" + document.getElementById("pulse").value;
-  var myReturn = document.getElementById("ReturnTens");
-  myReturn.data = url
-}
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/tenson?m=" + document.getElementById("mod").value + "&f=" + document.getElementById("freq").value + "&p=" + document.getElementById("pulse").value)
+ }
+ }
+
 function TensOff(){
   document.getElementById("tens").checked = false
-  url = "http://" + DeviceIP + "/tensoff";
-  var myReturn = document.getElementById("ReturnTens");
-  myReturn.data =  url
-
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/tensoff")
+}
 }
 
 function PumpOn(Limit){
@@ -203,16 +301,17 @@ function PumpOn(Limit){
   } else {
      url = "http://" + DeviceIP + "/pumpon";
   }
-  var myReturn = document.getElementById("ReturnPump");
-  myReturn.data =  url
-  document.getElementById("pump").checked = true
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push(url)
+  }
+ document.getElementById("pump").checked = true
 }
 
 function PumpOff(){
-  url = "http://" + DeviceIP + "/pumpoff";
-  var myReturn = document.getElementById("ReturnPump");
-  myReturn.data =  url
-  document.getElementById("pump").checked = false
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/pumpoff")
+  }
+ document.getElementById("pump").checked = false
 }
 
 function VacOn(Limit){
@@ -221,49 +320,48 @@ function VacOn(Limit){
   } else {
      url = "http://" + DeviceIP + "/vacon";
   }
-  var myReturn = document.getElementById("ReturnVac");
-  myReturn.data =  url
-  document.getElementById("vac").checked = true
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push(url)
+  }
+ document.getElementById("vac").checked = true
 }
 
 function VacOff(){
-  url = "http://" + DeviceIP + "/vacoff";
-  var myReturn = document.getElementById("ReturnVac");
-  myReturn.data =  url
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/vacoff")
+  }
   document.getElementById("vac").checked = false
 }
 function Servo1(value){
-  url = "http://" + DeviceIP + "/servo1?pos=" + value;
-  var myReturn = document.getElementById("ReturnSv1");
-  myReturn.data =  url
-  document.getElementById("sv1").value = value
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/servo1?pos=" + value)
+  }
+ document.getElementById("sv1").value = value
 }
 
 function Servo2(value){
-  url = "http://" + DeviceIP + "/servo2?pos=" + value;
-  var myReturn = document.getElementById("ReturnSv2");
-  myReturn.data =  url
-  document.getElementById("sv2").value = value
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/servo2?pos=" + value)
+  }
+ document.getElementById("sv2").value = value
 }
 
 function Loopinit(value){
-  url = "http://"+ DeviceIP + "/loop?" + value;
-  var myReturn = document.getElementById("ReturnSv2");
-  myReturn.data = url;
-  document.getElementById("looptxt").value = value
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://"+ DeviceIP + "/loop?" + value)
+  }
+ document.getElementById("looptxt").value = value
 }
 
 
 var LevelCount = 0
 var StepCount = 0
 var RepeatCount = 0
-var date = new Date()
-var PreviousTime = date.getTime()
 var nextImage = new Image()
 nextImage.src = myObj.LEVELS[0].STEPS[0].SRC
+ImageProgress()
 function update() {
   var date = new Date()
-
   var hours = date.getHours()
   if (hours < 10) hours = "0"+hours
   document.getElementById("hour").innerHTML = hours
@@ -352,21 +450,36 @@ function update() {
 
         if (myObj.LEVELS[LevelCount].STEPS[StepCount].SRC){
            document.getElementById("background").style.backgroundImage = "url( "+nextImage.src+")"
+           //if not end of level load next image in level
            if ((StepCount+1) < myObj.LEVELS[LevelCount].STEPS.length){
              nextImage.src = myObj.LEVELS[LevelCount].STEPS[StepCount+1].SRC
+             ImageProgress()
+           //if end of level
             }else{
-              if ((LevelCount+1) < myObj.LEVELS.length){
-                nextImage.src = myObj.LEVELS[LevelCount+1].STEPS[0].SRC
+              //if level is to repeat load first image in level
+              if ((myObj.LEVELS[LevelCount].REPEAT && (myObj.LEVELS[LevelCount].REPEAT > RepeatCount))|| document.getElementById("RepeatForever").checked){
+                 nextImage.src = myObj.LEVELS[LevelCount].STEPS[0].SRC
+                 ImageProgress()
               }else{
-                nextImage.src = myObj.LEVELS[0].STEPS[0].SRC
+              //if not end of all levels, load first image from next level
+                   if ((LevelCount+1) < myObj.LEVELS.length){
+                      nextImage.src = myObj.LEVELS[LevelCount+1].STEPS[0].SRC
+                      ImageProgress()
+                   //otherwise load first image
+                   }else{
+                   nextImage.src = myObj.LEVELS[0].STEPS[0].SRC
+                   ImageProgress()
+                   }
               }
-            }
+           }
         }
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].TXT){
+        if (typeof myObj.LEVELS[LevelCount].STEPS[StepCount].TXT !== 'undefined'){
            document.getElementById("Notice").innerHTML = myObj.LEVELS[LevelCount].STEPS[StepCount].TXT
+           if(document.getElementById("AudioOn").checked){responsiveVoice.speak(myObj.LEVELS[LevelCount].STEPS[StepCount].TXT, document.getElementById("ChooseVoice").value)}
         }
         StepCount++
         PreviousTime = date.getTime()
+
         }
   }else {
         if (myObj.LEVELS[LevelCount].REPEAT || document.getElementById("RepeatForever").checked){
@@ -381,6 +494,7 @@ function update() {
         }else {
               LevelCount++
               RepeatCount = 0
+              document.getElementById("LevelSelect" ).selectedIndex = LevelCount
         }
         if (LevelCount >= myObj.LEVELS.length){
           LevelCount = 0
@@ -390,35 +504,67 @@ function update() {
           document.getElementById("LevelSelect" ).selectedIndex = LevelCount
           return
         }
-        document.getElementById("LevelSelect" ).selectedIndex = LevelCount
+   document.getElementById("LevelSelect" ).selectedIndex = LevelCount
   }
-
-
-
-  timerId = setTimeout(update, 1000)
+  if(requestHstack.length == 0){
+    timerId = setTimeout(update, 1000)
+  }else{
+     RequestHTML()
+  }
 }
 
 function clockStart() {
+  console.log('start')
   if (timerId) return
   update()
 }
 
 function clockStop() {
+  console.log('stop')
   clearTimeout(timerId)
   timerId = null
 }
-
+var Imp = 0
+function ImageProgress(){
+      var elem = document.getElementById("myBar");
+      var width = 1;
+      var imageP = setInterval(frame, 10);
+      function frame() {
+               if (nextImage.complete) {
+               clearInterval(imageP);
+               imageP=null;
+               if(elem!=null){
+               elem.style.width = '100%';}
+               Imp = 0;
+               } else {
+               if(Imp>10){
+                 width++
+                 Imp=0
+               }
+        Imp++
+        if(elem!=null){
+        elem.style.width = width + '%';}
+    }
+  }
+}
 function ChangeLevel(){
-        LevelCount = document.getElementById("LevelSelect" ).selectedIndex
         StepCount = 0
         RepeatCount = 0
+        LevelCount = document.getElementById("LevelSelect" ).selectedIndex
+        if(typeof myObj.LEVELS[LevelCount].STEPS[0].TXT !== 'undefined'){
+                  document.getElementById("Notice").innerHTML = myObj.LEVELS[LevelCount].STEPS[0].TXT
+                  if(document.getElementById("AudioOn").checked){responsiveVoice.speak(myObj.LEVELS[LevelCount].STEPS[StepCount].TXT, document.getElementById("ChooseVoice").value)}
+                  }
+        document.getElementById("background").style.backgroundImage = "url( "+myObj.LEVELS[LevelCount].STEPS[0].SRC+")"
+        nextImage.src = "url( "+myObj.LEVELS[LevelCount].STEPS[0].SRC+")"
+        ImageProgress()
 }
 
 
 </script>
 
 </head>
-<body>
+<body onload='clockStop()'>
 
 <div id="Title" onmouseenter="ShowControls()" >
 </div>
@@ -429,12 +575,16 @@ function ChangeLevel(){
 
 Level: <select id="LevelSelect" onchange="ChangeLevel()">
 </select>
-Repeat Forever: <input type="checkbox" id="RepeatForever" onchange="AlwaysRepeat()">
+Repeat Forever:<input type="checkbox" id="RepeatForever">
+Audio On:<input type="checkbox" id="AudioOn">
+<select id="ChooseVoice"> </select>
 <input type="button" onclick="ShowHideOutput()" value="Show/Hide Output">
-<a href="imagenate.php">Home</a>
-
-
+No Hardware<input type="checkbox" id="NoHardware">
+<input type="button" value="Return Home" onclick="document.forms[0].submit();">
 </div>
+<form action="imagenate.php" method="post" id="returnhomeform">           "
+<input type="hidden" name="pass" value="<?php echo $pass;?>">
+</form>
 <div id="output">
 <span id="hour">00</span>:<span id="min">00</span>:<span id="sec">00</span><br>
 <span id="debug"></span><br>
@@ -452,30 +602,32 @@ MOD<input type="textbox" id="mod" >
 FREQ<input type="textbox" id="freq" >
 PULSE<input type="textbox" id="pulse" > <br>
 LOOP ARGS<input type="textbox" id="looptxt">
-
+ <div id="myProgress">
+  <div id="myBar"></div>
+</div>
 
 </div>
 <div id="outputobjects">
 <p id="rxHTML">
-<object id="ReturnS1" type="text/html" ></object>
-<object id="ReturnS2" type="text/html" ></object>
-<object id="ReturnS3" type="text/html" ></object>
-<object id="ReturnPump" type="text/html" ></object>
-<object id="ReturnVac" type="text/html" ></object>
-<object id="ReturnS4" type="text/html" ></object>
-<object id="ReturnSv1" type="text/html" ></object>
-<object id="ReturnSv2" type="text/html" ></object>
-<object id="ReturnTens" type="text/html" ></object>
+<object id="ReturnHTML" type="text/html" onload="RequestHTML('loaded')" ></object>
 </p>
 </div>
 <div id="Notice"></div>
 <div id="background"></div>
 
 <script type="text/javascript">
-
-
-document.getElementById("Title").innerHTML =  document.getElementById("Title").innerHTML +  myObj.NAME
-document.getElementById("Notice").innerHTML = myObj.LEVELS[0].STEPS[0].TXT
+//initialise
+try{
+  var Vs = responsiveVoice.getVoices()
+for (i=0;i<Vs.length;i++){
+  var option = document.createElement("option")
+  option.value=Vs[i].name
+  option.text=Vs[i].name
+  document.getElementById("ChooseVoice").appendChild(option)
+}
+}catch(e){}
+if(typeof myObj.LEVELS[0].STEPS[0].TXT !== 'undefined'){
+document.getElementById("Notice").innerHTML = myObj.LEVELS[0].STEPS[0].TXT}
 document.getElementById("background").style.backgroundImage = "url( "+myObj.LEVELS[0].STEPS[0].SRC+")"
 for (i=0; i < myObj.LEVELS.length; i++){
 var x = document.getElementById("LevelSelect")

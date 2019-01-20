@@ -14,6 +14,7 @@ if($_POST['NewUploadFolder']!= "New upload folder" && $_POST['NewUploadFolder']!
   if(!is_dir('./img/'.$myDir)){
     mkdir('./img/'.$myDir);
     mkdir('./img/'.$myDir.'/thumb');
+    mkdir('./img/'.$myDir.'/slide');
   }
 }else{
   $myDir= $_POST['mySelect'];
@@ -25,12 +26,14 @@ if ($fn) {
         $myBlob = cryptfile($myBlob, MainKey);
         file_put_contents('./img/'.$myDir.'/'.$newname, $myBlob );
        	echo "$fn uploaded";
+       	echo '<img src="image.php?image_name='.$newname.'&style=slide&image_path=img/'.$myDir.'" >';
         exit();
 
 }
 else {
   // form submit
 	$files = $_FILES['userfile'];
+ $htmlString ='';
   foreach ($files['error'] as $id => $err) {
 		if ($err == UPLOAD_ERR_OK) {
 			$namefile = $files['name'][$id];
@@ -39,8 +42,9 @@ else {
       $myBlob = cryptfile($myBlob, MainKey);
       file_put_contents('./img/'.$myDir.'/'.$newname, $myBlob );
    		echo "<p>File $namefile uploaded.</p>";
+   		$htmlString += '<img src="image.php?image_name='.$newname.'&style=slide&image_path=img/'.$myDir.'" > ';
 		}
 	}
-
+ echo $htmlString ;
 }
 ?>

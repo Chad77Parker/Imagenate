@@ -37,7 +37,7 @@ Developed by Craig Buckler (@craigbuckler) of OptimalWorks.net
 
 		// process all File objects
 		for (var i = 0, f; f = files[i]; i++) {
-			ParseFile(f);
+			//ParseFile(f);
       UploadFile(f);
 			
 		}
@@ -110,7 +110,7 @@ Developed by Craig Buckler (@craigbuckler) of OptimalWorks.net
 			xhr.onreadystatechange = function(e) {
 				if (xhr.readyState == 4) {
           	progress.className = (xhr.status == 200 ? "success" : "failure");
-				//Output(xhr.responseText)
+				Output(xhr.responseText)
         }
 			};
 
