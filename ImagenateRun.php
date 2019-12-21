@@ -27,564 +27,36 @@ if (file_exists($filepath)) {
 <head>
 <script src="http://code.responsivevoice.org/responsivevoice.js"></script>
 <link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah" rel="stylesheet">
-<link rel="stylesheet" type="text/css"
-          href="https://fonts.googleapis.com/css?family=Tangerine">
-    <style>
-      #Title{
-        position:absolute; top:0; left:0;
- 	      width:100%;
-        height:8%;
-        text-align:center;
-        z-index:5;
-        font-family: 'Gloria Hallelujah', cursive;
-        color:red;
-        font-size: 24px;
-        text-shadow: 4px 4px 4px #aaa;
-
-      }
-
-      #Notice{
-        position:absolute; top:88%; left:0;
- 	      width:100%;
-        height:12%;
-        text-align:center;
-        z-index:5;
-        font-family: 'Gloria Hallelujah', cursive;
-        color:red;
-        font-size: 48px;
-        text-shadow: 4px 4px 4px #aaa;
-      }
-
-      #controls{
-        position:absolute; top:0; left:0;
-        z-index:6;
-        width:100%;
-        height:15%;
-        display:none;
-      }
-
-      #output{
-        position:absolute; top:15%; left:0;
-        z-index:6;
-        width:33%;
-        height:30%;
-        display:none;
-      }
-      #outputobjects{
-        position:absolute; top:0%; left:0;
-        z-index:6;
-        width:100%;
-        height:30%;
-        visibility:hidden;
-      }
-      #background{
-        position:absolute;
-	      background: pink no-repeat fixed center;
-	       background-image: url( img/Backgrounds/OrangeBG.jpg);
-         background-repeat: no-repeat;
-         background-attachment: fixed;
-         background-size: contain;
-         background-position: 50% 0%;
-        z-index:1;
-	      width:100%;
-	      height:100%;
-	      top:0;
-	      left:0;
-	      text-align:center;
-      }
-      #myProgress {
-      width: 100%;
-      background-color: grey;
-      }
-
-      #myBar {
-       width: 1%;
-       height: 30px;
-       background-color: green;
-      }
-    </style>
-<style>#hour{color:red}#min{color:green}#sec{color:blue}</style>
+<link href="data/Imagenate.css "rel="stylesheet" type="text/css">
 
 <script type="text/javascript">
-var timerId
 var myJSON = <?php $myJSON = trim(preg_replace('/\s+/', ' ', $myJSON)); echo '\''.$myJSON.'\''; ?> ;
-var myObj = JSON.parse(myJSON)
 var DeviceIP =  <?php echo '\''.$_SESSION['DeviceAddress'].'\''; ?>;
-var requestHstack = []
-var PreviousTime
-
-function ShowControls(){
-   document.getElementById("controls").style.display = "block"
-}
-
-function HideControls(){
-   document.getElementById("controls").style.display = "none"
-  }
-
-function ShowHideOutput(){
-  var myDisplay = document.getElementById("output").style.display
-  if (myDisplay == "block"){
-        document.getElementById("output").style.display = "none"
-  }else{
-    document.getElementById("output").style.display = "block"
-  }
-}
-
-function RequestHTML(){
-    var date = new Date()
-    PreviousTime = date.getTime()
-    if(requestHstack.length > 0){
-      clockStop()
-      var myReturn = document.getElementById("ReturnHTML");
-      myReturn.data =  requestHstack.shift()
-      console.log(myReturn.data)
-    }else{
-      var imageP
-      if(imageP==null){
-      if(!timerId){
-        PreviousTime = date.getTime()
-        console.log('previos time set to'+PreviousTime)
-        timerId = setTimeout(update, 1000)
-      }
-      }
-    }
-}
-
-function doc_keyUp(e) {
-        // this would test for whichever key is 32 and the ctrl key at the same time
-    switch (e.keyCode) {
-        case 32:
-                //on "space" go to next level
-                NextLevel();
-                break;
-        case 13:
-             //on "enter" toggle clock start/stop
-             if(timerId){
-               clockStop();
-             }else{clockStart();
-           }
-           break;
-        case 86:
-             // on "v" toggle voice on/off
-             document.getElementById("AudioOn").checked = !document.getElementById("AudioOn").checked;
-             if(document.getElementById("AudioOn").checked){
-             document.getElementById("Notice").style.display="none"
-             }else{
-                document.getElementById("Notice").style.display="block"
-             }
-             break;
-        case 72:
-             //on "h" toggle no hardware on/off
-             document.getElementById("NoHardware").checked = !document.getElementById("NoHardware").checked;
-             break;
-        case 79:
-             //on "o" toggle show output
-             ShowHideOutput();
-             break;
-        case 82:
-             // on "r" toggle repeat forever
-             document.getElementById("RepeatForever").checked = !document.getElementById("RepeatForever").checked;
-             break;
-        default:
-             //on anything else skip to next step
-             var date = new Date()
-             clockStop()
-             PreviousTime=date.getTime() - 3600000
-             update()
-             break;
-    }
-    
-}
-// register the handler
-document.addEventListener('keyup', doc_keyUp, false);
-
-function NextLevel(){
-        StepCount = 0
-        RepeatCount = 0
-        LevelCount = document.getElementById("LevelSelect" ).selectedIndex + 1
-        if(LevelCount>=myObj.LEVELS.length){LevelCount = 0}
-        document.getElementById("LevelSelect" ).selectedIndex = LevelCount
-        if(typeof myObj.LEVELS[LevelCount].STEPS[0].TXT !== 'undefined'){
-                  document.getElementById("Notice").innerHTML = myObj.LEVELS[LevelCount].STEPS[0].TXT
-                  if(document.getElementById("AudioOn").checked){responsiveVoice.speak(myObj.LEVELS[LevelCount].STEPS[StepCount].TXT, document.getElementById("ChooseVoice").value)}
-                  }
-        document.getElementById("background").style.backgroundImage = "url( "+myObj.LEVELS[LevelCount].STEPS[0].SRC+")"
-        nextImage.src = "url( "+myObj.LEVELS[LevelCount].STEPS[0].SRC+")"
-        ImageProgress()
-}
-
-function S1On(){
-  document.getElementById("s1").checked = true
-  if(document.getElementById("NoHardware").checked != true){
-    requestHstack.push("http://" + DeviceIP + "/s1on")
-  }
-}
-
-function S1Off(){
-  document.getElementById("s1").checked = false
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/s1off")
-}
-}
-
-function S2On(){
-  document.getElementById("s2").checked = true
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/s2on")
-}
-}
-
-function S2Off(){
-  document.getElementById("s2").checked = false
- if(document.getElementById("NoHardware").checked != true){
-   requestHstack.push("http://" + DeviceIP + "/s2off")
-  }
-  }
-
-function S3On(){
-  document.getElementById("s3").checked = true
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/s3on")
-  }
-}
-
-function S3Off(){
-  document.getElementById("s3").checked = false
- if(document.getElementById("NoHardware").checked != true){
-   requestHstack.push("http://" + DeviceIP + "/s30ff")
- }
- }
-
-function S4On(){
-  document.getElementById("s4").checked = true
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/s4on")
- }
- }
-
-function S4Off(){
-  document.getElementById("s4").checked = false
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/s4off")
- }
- }
-  
-function Mod(val){
-  document.getElementById("mod").value = val
-}
-
-function Freq(val){
-  document.getElementById("freq").value = val
-}
-
-function Pulse(val){
-  document.getElementById("pulse").value = val
-}
-
-function TensOn(){
-  document.getElementById("tens").checked = true
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/tenson?m=" + document.getElementById("mod").value + "&f=" + document.getElementById("freq").value + "&p=" + document.getElementById("pulse").value)
- }
- }
-
-function TensOff(){
-  document.getElementById("tens").checked = false
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/tensoff")
-}
-}
-
-function PumpOn(Limit){
-  if (Limit){
-      url = "http://" + DeviceIP + "/pumpon?value=" + Limit ;
-  } else {
-     url = "http://" + DeviceIP + "/pumpon";
-  }
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push(url)
-  }
- document.getElementById("pump").checked = true
-}
-
-function PumpOff(){
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/pumpoff")
-  }
- document.getElementById("pump").checked = false
-}
-
-function VacOn(Limit){
-  if (Limit){
-      url = "http://" + DeviceIP + "/vacon?value=" + Limit ;
-  } else {
-     url = "http://" + DeviceIP + "/vacon";
-  }
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push(url)
-  }
- document.getElementById("vac").checked = true
-}
-
-function VacOff(){
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/vacoff")
-  }
-  document.getElementById("vac").checked = false
-}
-function Servo1(value){
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/servo1?pos=" + value)
-  }
- document.getElementById("sv1").value = value
-}
-
-function Servo2(value){
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/servo2?pos=" + value)
-  }
- document.getElementById("sv2").value = value
-}
-
-function Loopinit(value){
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://"+ DeviceIP + "/loop?" + value)
-  }
- document.getElementById("looptxt").value = value
-}
-
-
-var LevelCount = 0
-var StepCount = 0
-var RepeatCount = 0
-var nextImage = new Image()
-nextImage.src = myObj.LEVELS[0].STEPS[0].SRC
-ImageProgress()
-function update() {
-  var date = new Date()
-  var hours = date.getHours()
-  if (hours < 10) hours = "0"+hours
-  document.getElementById("hour").innerHTML = hours
-
-  var minutes = date.getMinutes()
-  if (minutes < 10) minutes = "0"+minutes
-  document.getElementById("min").innerHTML = minutes
-
-  var seconds = date.getSeconds()
-  if (seconds < 10) seconds = "0"+seconds
-  document.getElementById("sec").innerHTML = seconds
-  if (StepCount < myObj.LEVELS[LevelCount].STEPS.length){
-     var NewTime = date.getTime() - Number(myObj.LEVELS[LevelCount].STEPS[StepCount].DELAY)*1000
-     if ( NewTime > PreviousTime){
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].S1){
-           if (myObj.LEVELS[LevelCount].STEPS[StepCount].S1 == "ON"){
-              S1On()
-           }else {
-                 S1Off()
-           }
-        }
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].S2){
-           if (myObj.LEVELS[LevelCount].STEPS[StepCount].S2 == "ON"){
-              S2On()
-           }else {
-                 S2Off()
-           }
-        }
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].S3){
-           if (myObj.LEVELS[LevelCount].STEPS[StepCount].S3 == "ON"){
-              S3On()
-           }else {
-                 S3Off()
-           }
-        }
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].S4){
-           if (myObj.LEVELS[LevelCount].STEPS[StepCount].S4 == "ON"){
-              S4On()
-           }else {
-                 S4Off()
-           }
-        }
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].MOD){
-           Mod(myObj.LEVELS[LevelCount].STEPS[StepCount].MOD)
-        }
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].FREQ){
-           Freq(myObj.LEVELS[LevelCount].STEPS[StepCount].FREQ)
-        }
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].PULSE){
-           Pulse(myObj.LEVELS[LevelCount].STEPS[StepCount].PULSE)
-        }
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].TENS){
-           if (myObj.LEVELS[LevelCount].STEPS[StepCount].TENS == "ON"){
-              TensOn()
-           }else {
-                 TensOff()
-           }
-        }
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].PUMP){
-           if (myObj.LEVELS[LevelCount].STEPS[StepCount].PUMP == "ON"){
-              PumpOn()
-           }else if(myObj.LEVELS[LevelCount].STEPS[StepCount].PUMP == "OFF"){
-                 PumpOff()
-           }else{
-                 PumpOn(myObj.LEVELS[LevelCount].STEPS[StepCount].PUMP)
-           }
-        }
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].VAC){
-           if (myObj.LEVELS[LevelCount].STEPS[StepCount].VAC == "ON"){
-              VacOn()
-           }else if(myObj.LEVELS[LevelCount].STEPS[StepCount].VAC == "OFF"){
-                 VacOff()
-           }else{
-                 VacOn(myObj.LEVELS[LevelCount].STEPS[StepCount].VAC)
-           }
-        }
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].SV1){
-           Servo1(myObj.LEVELS[LevelCount].STEPS[StepCount].SV1)
-        }
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].SV2){
-           Servo2(myObj.LEVELS[LevelCount].STEPS[StepCount].SV2)
-        }
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].LOOP){
-           Loopinit(myObj.LEVELS[LevelCount].STEPS[StepCount].LOOP)
-        }
-
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].SRC){
-           document.getElementById("background").style.backgroundImage = "url( "+nextImage.src+")"
-           //if not end of level load next image in level
-           if ((StepCount+1) < myObj.LEVELS[LevelCount].STEPS.length){
-             nextImage.src = myObj.LEVELS[LevelCount].STEPS[StepCount+1].SRC
-             ImageProgress()
-           //if end of level
-            }else{
-              //if level is to repeat load first image in level
-              if ((myObj.LEVELS[LevelCount].REPEAT && (myObj.LEVELS[LevelCount].REPEAT > RepeatCount))|| document.getElementById("RepeatForever").checked){
-                 nextImage.src = myObj.LEVELS[LevelCount].STEPS[0].SRC
-                 ImageProgress()
-              }else{
-              //if not end of all levels, load first image from next level
-                   if ((LevelCount+1) < myObj.LEVELS.length){
-                      nextImage.src = myObj.LEVELS[LevelCount+1].STEPS[0].SRC
-                      ImageProgress()
-                   //otherwise load first image
-                   }else{
-                   nextImage.src = myObj.LEVELS[0].STEPS[0].SRC
-                   ImageProgress()
-                   }
-              }
-           }
-        }
-        if (typeof myObj.LEVELS[LevelCount].STEPS[StepCount].TXT !== 'undefined'){
-           document.getElementById("Notice").innerHTML = myObj.LEVELS[LevelCount].STEPS[StepCount].TXT
-           if(document.getElementById("AudioOn").checked){responsiveVoice.speak(myObj.LEVELS[LevelCount].STEPS[StepCount].TXT, document.getElementById("ChooseVoice").value)}
-        }
-        StepCount++
-        PreviousTime = date.getTime()
-
-        }
-  }else {
-        if (myObj.LEVELS[LevelCount].REPEAT || document.getElementById("RepeatForever").checked){
-           StepCount = 0
-           if (!document.getElementById("RepeatForever").checked){
-             RepeatCount++
-           }
-           if (RepeatCount >  myObj.LEVELS[LevelCount].REPEAT){
-              LevelCount++
-              RepeatCount = 0
-           }
-        }else {
-              LevelCount++
-              RepeatCount = 0
-              document.getElementById("LevelSelect" ).selectedIndex = LevelCount
-        }
-        if (LevelCount >= myObj.LEVELS.length){
-          LevelCount = 0
-          RepeatCount = 0
-          StepCount = 0
-          clockStop()
-          document.getElementById("LevelSelect" ).selectedIndex = LevelCount
-          return
-        }
-   document.getElementById("LevelSelect" ).selectedIndex = LevelCount
-  }
-  if(requestHstack.length == 0){
-    timerId = setTimeout(update, 1000)
-  }else{
-     RequestHTML()
-  }
-}
-
-function clockStart() {
-  console.log('start')
-  if (timerId) return
-  update()
-}
-
-function clockStop() {
-  console.log('stop')
-  clearTimeout(timerId)
-  timerId = null
-}
-var Imp = 0
-function ImageProgress(){
-      var elem = document.getElementById("myBar");
-      var width = 1;
-      var imageP = setInterval(frame, 10);
-      function frame() {
-               if (nextImage.complete) {
-               clearInterval(imageP);
-               imageP=null;
-               if(elem!=null){
-               elem.style.width = '100%';}
-               Imp = 0;
-               } else {
-               if(Imp>10){
-                 width++
-                 Imp=0
-               }
-        Imp++
-        if(elem!=null){
-        elem.style.width = width + '%';}
-    }
-  }
-}
-function ChangeLevel(){
-        StepCount = 0
-        RepeatCount = 0
-        LevelCount = document.getElementById("LevelSelect" ).selectedIndex
-        if(typeof myObj.LEVELS[LevelCount].STEPS[0].TXT !== 'undefined'){
-                  document.getElementById("Notice").innerHTML = myObj.LEVELS[LevelCount].STEPS[0].TXT
-                  if(document.getElementById("AudioOn").checked){responsiveVoice.speak(myObj.LEVELS[LevelCount].STEPS[StepCount].TXT, document.getElementById("ChooseVoice").value)}
-                  }
-        document.getElementById("background").style.backgroundImage = "url( "+myObj.LEVELS[LevelCount].STEPS[0].SRC+")"
-        nextImage.src = "url( "+myObj.LEVELS[LevelCount].STEPS[0].SRC+")"
-        ImageProgress()
-}
-
-
 </script>
-
+<script src="data/ImagenateRun.js"></script>
 </head>
-<body onload='clockStop()'>
+<body onload='initialise()'>
 
 <div id="Title" onmouseenter="ShowControls()" >
 </div>
-<div id="controls" onmouseout="HideControls()">
 
+<div id="controls" onmouseout="HideControls()">
 <input type="button" onclick="clockStart()" value="Start">
 <input type="button" onclick="clockStop()" value="Stop">
-
 Level: <select id="LevelSelect" onchange="ChangeLevel()">
 </select>
 Repeat Forever:<input type="checkbox" id="RepeatForever">
-Audio On:<input type="checkbox" id="AudioOn">
+Audio On:<input type="checkbox" id="AudioOn" onclick="ToggleAudio(this)">
 <select id="ChooseVoice"> </select>
 <input type="button" onclick="ShowHideOutput()" value="Show/Hide Output">
 No Hardware<input type="checkbox" id="NoHardware">
 <input type="button" value="Return Home" onclick="document.forms[0].submit();">
 </div>
-<form action="imagenate.php" method="post" id="returnhomeform">           "
+
+<form action="imagenate.php" method="post" id="returnhomeform">
 <input type="hidden" name="pass" value="<?php echo $pass;?>">
 </form>
+
 <div id="output">
 <span id="hour">00</span>:<span id="min">00</span>:<span id="sec">00</span><br>
 <span id="debug"></span><br>
@@ -594,7 +66,7 @@ S3<input type="radio" id="s3" >
 S4<input type="radio" id="s4" >
 PUMP<input type="radio" id="pump" >
 VAC<input type="radio" id="vac" >
- <br>
+<br>
 SV1<input type="range" id="sv1" value=90 max=180> <br>
 SV2<input type="range" id="sv2" value=90 max=180> <br>
 TENS<input type="radio" id="tens" >
@@ -602,41 +74,26 @@ MOD<input type="textbox" id="mod" >
 FREQ<input type="textbox" id="freq" >
 PULSE<input type="textbox" id="pulse" > <br>
 LOOP ARGS<input type="textbox" id="looptxt">
- <div id="myProgress">
+  <div id="myProgress">
   <div id="myBar"></div>
+  </div>
 </div>
 
-</div>
 <div id="outputobjects">
 <p id="rxHTML">
-<object id="ReturnHTML" type="text/html" onload="RequestHTML('loaded')" ></object>
+<object id="ReturnHTML" type="text/html" onload="RequestHTML()" data=""></object>
 </p>
 </div>
+
 <div id="Notice"></div>
 <div id="background"></div>
 
-<script type="text/javascript">
-//initialise
-try{
-  var Vs = responsiveVoice.getVoices()
-for (i=0;i<Vs.length;i++){
-  var option = document.createElement("option")
-  option.value=Vs[i].name
-  option.text=Vs[i].name
-  document.getElementById("ChooseVoice").appendChild(option)
-}
-}catch(e){}
-if(typeof myObj.LEVELS[0].STEPS[0].TXT !== 'undefined'){
-document.getElementById("Notice").innerHTML = myObj.LEVELS[0].STEPS[0].TXT}
-document.getElementById("background").style.backgroundImage = "url( "+myObj.LEVELS[0].STEPS[0].SRC+")"
-for (i=0; i < myObj.LEVELS.length; i++){
-var x = document.getElementById("LevelSelect")
-var option = document.createElement("option")
-option.text = myObj.LEVELS[i].TYPE
-x.add(option)
-}
-
-</script>
+<div id="vid">
+<video autoplay muted loop controls id="myVideo" src="">
+</video>
+<iframe src="data/silence.mp3" allow="autoplay" id="audio" style="display:none"></iframe>
+<audio autoplay  id="myAudio" src="" type="audio/mpeg" style="display:none"></audio>
+</div>
 
 </body>
 </html>

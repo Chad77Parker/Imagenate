@@ -1,11 +1,9 @@
 <?php
-
 include 'ccrypt.php';
 
 /*
 Server-side PHP file upload code for HTML5 File Drag & Drop demonstration
-Featured on SitePoint.com
-Developed by Craig Buckler (@craigbuckler) of OptimalWorks.net
+
 */
 
 $fn = (isset($_FILES['photos']['name'][0])?$_FILES['photos']['name'][0]:false);
@@ -21,12 +19,25 @@ if($_POST['NewUploadFolder']!= "New upload folder" && $_POST['NewUploadFolder']!
 }
 if ($fn) {
   	// AJAX call
-  			$newname = cryptfilename($fn);
+        $newname = cryptfilename($fn);
         $myBlob = file_get_contents($_FILES['photos']['tmp_name'][0]);
         $myBlob = cryptfile($myBlob, MainKey);
-        file_put_contents('./img/'.$myDir.'/'.$newname, $myBlob );
+
        	echo "$fn uploaded";
-       	echo '<img src="image.php?image_name='.$newname.'&style=slide&image_path=img/'.$myDir.'" >';
+        if(strpos($fn,".mp4")>0){
+           //generate thumbnail from video
+           file_put_contents('./img/'.$myDir.'/slide/'.$newname, $myBlob );
+           echo '<img src="./img/Backgrounds/movieicon.jpg">';
+           copy("./img/Backgrounds/movieicon.jpg", "./img/".$myDir."/thumb/".$newname.".jpg");
+        }elseif(strpos($fn,".mp3")>0){
+           file_put_contents('./img/'.$myDir.'/slide/'.$newname, $myBlob );
+           echo '<img src="./img/Backgrounds/audioicon.jpg">';
+           copy("./img/Backgrounds/audioicon.jpg", "./img/".$myDir."/thumb/".$newname.".jpg");
+        }else{
+           //generate image for slideshow
+           file_put_contents('./img/'.$myDir.'/'.$newname, $myBlob );
+           echo '<img src="image.php?image_name='.$newname.'&style=slide&image_path=img/'.$myDir.'" >';
+       	}
         exit();
 
 }
@@ -40,9 +51,21 @@ else {
    		$newname = cryptfilename($namefile);
       $myBlob = file_get_contents($files['tmp_name'][$id]);
       $myBlob = cryptfile($myBlob, MainKey);
-      file_put_contents('./img/'.$myDir.'/'.$newname, $myBlob );
-   		echo "<p>File $namefile uploaded.</p>";
-   		$htmlString += '<img src="image.php?image_name='.$newname.'&style=slide&image_path=img/'.$myDir.'" > ';
+      echo "<p>File $namefile uploaded.</p>";
+      if(strpos($fn,".mp4")>0){
+           //generate thumbnail from video
+           file_put_contents('./img/'.$myDir.'/slide/'.$newname, $myBlob );
+           $htmlString += '<img src="./img/Backgrounds/movieicon.jpg">';
+           copy("./img/Backgrounds/movieicon.jpg", "./img/".$myDir."/thumb/".$newname.".jpg");
+        }elseif(strpos($fn,".mp3")>0){
+           file_put_contents('./img/'.$myDir.'/slide/'.$newname, $myBlob );
+           $htmlString += '<img src="./img/Backgrounds/audioicon.jpg">';
+           copy("./img/Backgrounds/audioicon.jpg", "./img/".$myDir."/thumb/".$newname.".jpg");
+        }else{
+           //generate image for slideshow
+           file_put_contents('./img/'.$myDir.'/'.$newname, $myBlob );
+           $htmlString += '<img src="image.php?image_name='.$newname.'&style=slide&image_path=img/'.$myDir.'" >';
+       	}
 		}
 	}
  echo $htmlString ;

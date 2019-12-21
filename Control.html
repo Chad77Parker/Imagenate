@@ -191,7 +191,7 @@ var fhz=document.getElementById("F").value
 fhz=Math.pow(1.034,fhz)
 document.getElementById("FH").value=fhz
 document.getElementById("FreqValue").innerHTML="Frequency("+ document.getElementById("F").value+")"
-var pwp=document.getElementById("PW").value / 256 * 100
+var pwp=document.getElementById("PW").value * 2
 document.getElementById("PWP").value=pwp
 document.getElementById("PWValue").innerHTML="Pulse Width("+ document.getElementById("PW").value+")"
 
@@ -212,7 +212,7 @@ Above Url plus <input type="text" id="VariUrl" value="variable text to append"> 
 <input type="button" onclick=TensOn() value="Tens On"><input type="button" onclick=TensOff() value="Tens Off"><br><p id="ModValue">
 Modulation (0 to 255)</p><input type="range" value="128" min="0" max="255" step="1" id="M" onchange=Update()>modulation period in ms<input type="textbox" id="MP">
 <br><p id="FreqValue">Frequency(0 to 255)</p><input type="range" value="128" min="0" max="255" step="1"  id="F" onchange=Update()>frequency in Hz<input type="textbox" id="FH">
-<br><p id="PWValue">Pulse Width(0 to 255)</p><input type="range" value="128" min="0" max="255" step="1" id="PW" onchange=Update()>Pulse width in percent<input type="textbox" id="PWP">
+<br><p id="PWValue">Pulse Width(0 to 255)</p><input type="range" value="128" min="0" max="255" step="1" id="PW" onchange=Update()>Pulse width in us<input type="textbox" id="PWP">
 
 <p id="mytemplate" onchange=rxreturn()></p><br>
 <p id="notify"></p>

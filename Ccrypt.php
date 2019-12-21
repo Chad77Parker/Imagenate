@@ -23,17 +23,14 @@ function decryptfilename($data){
   return $output;
 }
 function cryptfile($data,$key){
-  $x = (int)(strlen($data)/strlen($key));
-  $newKey = $key;
-  while($x > 0){
-    $newKey = $newKey.$key;
-    $x--;
-  }
-  $newKey = substr($newKey,0,strlen($data));
-  $newData = $data ^ $newKey;
-  return $newData ;
-  
+
+  $newdata = substr($data,0,strlen($key));
+  $newdata = $newdata ^ $key;
+  substr_replace($data,$newdata,0,strlen($key));
+  return $data ;
 
 }
+function cryptheader($data,$key){
 
+}
 ?>

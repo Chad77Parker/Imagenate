@@ -3,13 +3,12 @@ function accessgrant($pass = "false"){
   if($pass !="destiny".date("Ymd",time())){
   return false;
   }else{
-    setcookie("grantaccess","true",time+3600);
+    $_SESSION['pass']=$pass;
     return true;
   }
 
-if(isset($_COOKIE['grantaccess'])){
-if($_COOKIE['grantaccess']=="true"){
-  setcookie("grantaccess","true",time()+3600);
+if(isset($_SESSION['pass'])){
+if($_SESSION['pass']=="destiny".date("Ymd",time())){
   return true;
 }else{
   return false;

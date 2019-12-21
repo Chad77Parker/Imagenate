@@ -8,120 +8,7 @@ if(!accessgrant($_POST['pass'])){
 <head>
 <title>JSON Constructor</title>
 <link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah" rel="stylesheet">
-<link rel="stylesheet" type="text/css"
-          href="https://fonts.googleapis.com/css?family=Tangerine">
-    <style>
-      #Title{
-        position:absolute; top:0; left:0;
- 	      width:100%;
-        height:8%;
-        text-align:center;
-        z-index:2;
-        font-family: 'Gloria Hallelujah', cursive;
-        color:red;
-        font-size: 2vw;
-        text-shadow: 4px 4px 4px #aaa;
-      }
-      #FormFooter{
-        position:absolute; bottom:8%; left:0;
- 	      width:100%;
-        height:6%;
-        text-align:center;
-        z-index:2;
-        font-family: 'Gloria Hallelujah', cursive;
-        color:red;
-        font-size: 48px;
-        text-shadow: 4px 4px 4px #aaa;
-      }
-
-      #formHeader{
-        position:absolute; top:4%; left:0;
-        z-index:3;
-        width:80%;
-        height:8%;
-        text-align:left;
-        color:red;
-        font-size: 24px;
-        text-shadow: 4px 4px 4px #aaa;
-      }
-      #FolderSelect{
-        position:absolute;
-        z-index:3;
-        height:8%;
-        width:50%;
-        top:8%;
-        overflow:hidden;
-      }
-      #FormMain{
-        position:absolute; top:16%; left:0;
-        z-index:2;
-        width:50%;
-        height:74%;
-        overflow:auto
-      }
-      #FormMainOverlay{
-        position:absolute; top:20%; left:0;
-        z-index:3;
-        width:50%;
-        height:66%;
-        overflow:auto
-      }
-      #imageselect{
-        position:absolute; top:16%; left:50%;
-        z-index:2;
-        width:50%;
-        height:74%;
-        overflow:auto;
-      }
-      #imageselectOverlay{
-        position:absolute; top:20%; left:50%;
-        z-index:3;
-        width:50%;
-        height:66%;
-        overflow:hidden;
-      }
-      #MainOverlay{
-         width:100%;
-         height:100%;
-         background: pink;
-         object-fit: contain;
-         overflow: hidden;
-         border-style:solid;
-         border-width:10px;
-         border-color:pink;
-      }
-      #background{
-        position:absolute;
-	      background: pink no-repeat fixed center;
-	       background-image: url(img/backgrounds/CyanBG.jpg );
-         background-repeat: no-repeat;
-         background-attachment: fixed;
-         background-size: contain;
-         background-position: 50% 0%;
-        z-index:1;
-	      width:100%;
-	      height:100%;
-	      top:0;
-	      left:0;
-	      text-align:center;
-      }
-      input.numfield{
-        width:5%;
-      }
-      input.textfield{
-        width:20%;
-      }
-      input.remaining{
-        width:auto;
-      }
-      td.tdclear{
-
-    }
-    img.tableimg{
-      max-height:90px;
-    }
-    </style>
-    
+<link rel="stylesheet" type="text/css"  href="data/JsonConstruct.css">
 <script>
 var thisRec=0
 var preRec=(-1)
@@ -141,7 +28,7 @@ function upInHTML(mychild){
   }
   if (tempid.search('Pulsepc')>=0){
        tempid = tempid.replace('Pulsepc', 'Pulse')
-       newvalue = Math.round(mychild.value*255/100)
+       newvalue = Math.round(mychild.value/2)
        document.getElementById(tempid).setAttribute('value',newvalue)
   }
   mychild.setAttribute('value',mychild.value)
@@ -152,7 +39,7 @@ function AddRecord(){
 try{
 var myInHTML =""
 
-var level,repeat,delay,notice,s1,s2,s3,s4,vac,pump,tens,sv1,sv2,mod,freq,pulse,largs
+var level,repeat,delay,notice,s1,s2,s3,s4,vac,pump,tens,playonce,sv1,sv2,mod,freq,pulse,largs
 preRec<0?level = "":level = document.getElementById('Level_'+preRec).value
 preRec<0?repeat = "0":repeat = document.getElementById('Repeat_'+preRec).value
 preRec<0?delay = "5":delay = document.getElementById('Delay_'+preRec).value
@@ -164,13 +51,16 @@ preRec<0?s4 = "false":s4 = document.getElementById('S4_'+preRec).value
 preRec<0?vac = "false":vac = document.getElementById('Vac_'+preRec).value
 preRec<0?pump = "false":pump = document.getElementById('Pump_'+preRec).value
 preRec<0?tens = "false":tens = document.getElementById('Tens_'+preRec).value
+preRec<0?playonce = "false":playonce = document.getElementById('Playonce_'+preRec).value
 preRec<0?sv1 = "90":sv1 = document.getElementById('Sv1_'+preRec).value
 preRec<0?sv2 = "90":sv2 = document.getElementById('Sv2_'+preRec).value
 preRec<0?mod = "0":mod = document.getElementById('Mod_'+preRec).value
 preRec<0?freq = "0":freq = document.getElementById('Freq_'+preRec).value
 preRec<0?pulse = "0":pulse = document.getElementById('Pulse_'+preRec).value
 preRec<0?largs = "s1onm=0&s1offm=0&s2onm=0&s2offm=0&s3onm=0&s3offm=0&s4onm=0&s4offm=0&vaconm=0&vacoffm=0&pumponm=0&pumpoffm=0&sv1onm=0&sv1onp=0&sv1offm=0&sv1offp=0&sv2onm=0&sv2onp=0&sv2offm=0&sv2offp=0&loopt=0":largs = document.getElementById('Loop_'+preRec).value
-
+preRec<0?modms = "0":modms = document.getElementById('Modms_'+preRec).value
+preRec<0?freqhz = "0":freqhz = document.getElementById('Freqhz_'+preRec).value
+preRec<0?pulsepc = "0":pulsepc = document.getElementById('Pulsepc_'+preRec).value
 myInHTML=myInHTML+'<div id="Record_'+thisRec+'" style="border-style:solid;border-width:5px;border-color:blue" onclick=UpdateRecords(this) ><table class="Record">'
 myInHTML=myInHTML+'<tr><td class="tdclear">'
 myInHTML=myInHTML+'Level:<input type="textbox" id="Level_'+thisRec+'" name="Level['+thisRec+']" class="textfield" value="'+level+'" oninput=upInHTML(this)>'
@@ -195,13 +85,15 @@ myInHTML=myInHTML+'<input type="button" value="PUMP" onclick=SetCol(this,"Pump_'
 myInHTML=myInHTML+'<input type="hidden" id="Pump_'+thisRec+'" name="Pump['+thisRec+']" value="'+pump+'" oninput=upInHTML(this)>'
 myInHTML=myInHTML+'<input type="button" value="TENS" onclick=SetCol(this,"Tens_'+thisRec+'") style="background-color:'+(tens=='false'?'red':'green')+';">'
 myInHTML=myInHTML+'<input type="hidden" id="Tens_'+thisRec+'" name="Tens['+thisRec+']" value="'+tens+'" oninput=upInHTML(this)>'
+myInHTML=myInHTML+'<input type="button" value="PLAYONCE" onclick=SetCol(this,"Playonce_'+thisRec+'") style="background-color:'+(playonce=='false'?'red':'green')+';">'
+myInHTML=myInHTML+'<input type="hidden" id="Playonce_'+thisRec+'" name="Playonce['+thisRec+']" value="'+playonce+'" oninput=upInHTML(this)>'
 myInHTML=myInHTML+'SV1<input type="range" id="Sv1_'+thisRec+'" name="Sv1['+thisRec+']" value="'+sv1+'" max="180" oninput=upInHTML(this)>'
 myInHTML=myInHTML+'SV2<input type="range" id="Sv2_'+thisRec+'" name="Sv2['+thisRec+']" value="'+sv2+'" min="45" max="75"  oninput=upInHTML(this)>'
 myInHTML=myInHTML+'</tr><tr>'
 myInHTML=myInHTML+'<td class="tdclear">'
-myInHTML=myInHTML+'Modulation(s)<input type="textbox" id="Modms_'+thisRec+'" oninput=upInHTML(this) class="numfield"><input type="hidden" id="Mod_'+thisRec+'" name="Mod['+thisRec+']" class="numfield" value="'+mod+'" oninput=upInHTML(this)>'
-myInHTML=myInHTML+'Frequency(Hz)<input type="textbox" id="Freqhz_'+thisRec+'" oninput=upInHTML(this) class="numfield"><input type="hidden" id="Freq_'+thisRec+'" name="Freq['+thisRec+']" class="numfield" value="'+freq+'" oninput=upInHTML(this)>'
-myInHTML=myInHTML+'PulseWidth(%)<input type="textbox" id="Pulsepc_'+thisRec+'" oninput=upInHTML(this) class="numfield"><input type="hidden" id="Pulse_'+thisRec+'" name="Pulse['+thisRec+']" class="numfield" value="'+pulse+'" oninput=upInHTML(this)>'
+myInHTML=myInHTML+'Modulation(s)<input type="textbox" id="Modms_'+thisRec+'" value="'+modms+'" oninput=upInHTML(this) class="numfield"><input type="hidden" id="Mod_'+thisRec+'" name="Mod['+thisRec+']" class="numfield" value="'+mod+'" oninput=upInHTML(this)>'
+myInHTML=myInHTML+'Frequency(Hz)<input type="textbox" id="Freqhz_'+thisRec+'" value="'+freqhz+'" oninput=upInHTML(this) class="numfield"><input type="hidden" id="Freq_'+thisRec+'" name="Freq['+thisRec+']" class="numfield" value="'+freq+'" oninput=upInHTML(this)>'
+myInHTML=myInHTML+'PulseWidth(us)<input type="textbox" id="Pulsepc_'+thisRec+'" value="'+pulsepc+'" oninput=upInHTML(this) class="numfield"><input type="hidden" id="Pulse_'+thisRec+'" name="Pulse['+thisRec+']" class="numfield" value="'+pulse+'" oninput=upInHTML(this)>'
 myInHTML=myInHTML+'LoopArgs<input type="textbox" id ="Loop_'+thisRec+'" name="Loop['+thisRec+']" class="remaining" value="'+largs+'" oninput=upInHTML(this)>'
 myInHTML=myInHTML+'<input type="hidden" id="Image_'+thisRec+'" name="Image['+thisRec+']" class="numfield" value="" oninput=upInHTML(this)>'
 myInHTML=myInHTML+'</td>'
@@ -319,7 +211,7 @@ var myimg = document.getElementById(NewImg)
 myimg.style.border = "5px solid blue"
 curImg = NewImg
 document.getElementById("Image_"+curRec).value = p
-document.getElementById("pic_"+curRec).src = "imagedecode.php?filename="+t
+document.getElementById("pic_"+curRec).src = t
 }
 
 function UpdateRecords(myRec){
@@ -383,8 +275,17 @@ foreach($dirs as $value){
       $images[$f][$i]=$imagevalue;
       $i++;
     }
-    $image_thumb='img/'.$images[$f][0].'/thumb/'.$images[$f][1];
-    $src = 'imagedecode.php?filename='.$image_thumb;
+
+     if(strpos($images[$f][1],".faL")>0){  //check if file is mp4
+       $image_thumb='img/Backgrounds/movieicon.jpg';
+       $src=$image_thumb;
+     }elseif(strpos($images[$f][1],".faK")>0){  //check if file is mp3
+       $image_thumb='img/Backgrounds/audioicon.jpg';
+       $src=$image_thumb;
+     }else{
+       $image_thumb='img/'.$images[$f][0].'/thumb/'.$images[$f][1];
+       $src = 'imagedecode.php?filename='.$image_thumb;
+    }
 if(!file_exists($image_thumb)){
         $src = 'image.php?image_name='.$images[$f][1].'&style=thumb&image_path='.$images[$f][0];
      // only if file doesn't exist call the on-the-fly creating file
@@ -417,14 +318,28 @@ while(count($images)>$f){
     $image_name = $images[$f][$i];
     $style = "thumb";
     $image_thumb = $image_path.'/'.$style.'/'.$image_name;
-    $src = 'imagedecode.php?filename='.$image_thumb;
-if(!file_exists($image_thumb)){
+     if(strpos($images[$f][$i],".faL")>0){  //check if file is mp4
+       $src = 'img/Backgrounds/movieicon.jpg';
+       $linksrc = $image_path.'/slide/'.$image_name;
+       $txtoverlay = decryptfilename($image_name);
+       $image_path = $image_path.'/slide';
+     }elseif(strpos($images[$f][$i],".faK")>0){ //check if file is mp3
+       $src = 'img/Backgrounds/audioicon.jpg';
+       $linksrc = $image_path.'/slide/'.$image_name;
+       $txtoverlay = decryptfilename($image_name);
+       $image_path = $image_path.'/slide/';
+     }else{
+       $src = 'imagedecode.php?filename='.$image_thumb;
+       $linksrc = 'imagedecode.php?filename='.$image_path.'/slide/'.$image_name;
+       $txtoverlay = "";
+       if(!file_exists($image_thumb)){
         $src = "image.php?image_name=$image_name&style=$style&image_path=$image_path";
      // only if file doesn't exist call the on-the-fly creating file
     }
-    echo '<img data_src="'.$src;
-    echo '" onclick=UpdateText('.$f.','.$i.',"imagedecode.php?filename='.$image_path.'/slide/'.$image_name.'","';
-    echo $image_path.'/'.$style.'/'.$image_name.'") id="imagef'.$f.'i'.$i.'" style="width:20%;display:inline;border-style:solid;border-width:5px;border-color:transparent">';
+    }
+    echo '<div class="container" style="width:20%;display:inline;"><div class="centered">'.$txtoverlay.'</div><img data_src="'.$src;
+    echo '" onclick=UpdateText('.$f.','.$i.',"'.$linksrc.'","';
+    echo $src.'") id="imagef'.$f.'i'.$i.'" style="width:20%;display:inline;border-style:solid;border-width:5px;border-color:transparent"></div>';
     }
     $i++;
  }

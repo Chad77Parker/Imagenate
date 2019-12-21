@@ -7,6 +7,9 @@ $style = $_GET['style'];
      // You may set additional styles, but remember to
      // create the according subfolders.
 switch($style) {
+  case "slide":
+    $max_size = 2000;
+    break;
   case "show":
     $max_size = 800;
     break;
@@ -14,7 +17,7 @@ switch($style) {
     $max_size = 250;
 }
 $dest_file = "$image_path/$style/$image_name";
-     // set output file
+   // set output file
 $image_file = "$image_path/$image_name";
      // set source file
 $myblobi = file_get_contents($image_file);
@@ -46,11 +49,11 @@ imagecopyresampled($image_small, $image_big, 0,0, 0,0, $new_width,$new_height, $
 imagedestroy($image_big);
      // the original data are no longer used
 header('Content-Type: image/jpg');
-if($style=="show" || $style=="thumb") {
+if($style=="thumb" || $style=="slide") {
   if (!is_dir($image_path.'/'.$style)){
     mkdir($image_path.'/'.$style);
   }
-  if(!file_exists($dest_file))
+  if(!file_exists($dest_file)){
   // start buffering
 ob_start();
 imagejpeg($image_small);
@@ -58,9 +61,9 @@ $contents =  ob_get_contents();
 ob_end_clean();
 $myblobi = cryptfile($contents, MainKey);
 file_put_contents($dest_file, $myblobi);
-
+}}
    // imagejpeg($image_small, $dest_file, 100);
-}
+
      // if you have set additional sizese put them in the
      // if-arguments, too.
      // if someone calls the image.php directly in the
