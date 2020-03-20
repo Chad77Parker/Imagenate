@@ -41,7 +41,7 @@ var DeviceIP =  <?php echo '\''.$_SESSION['DeviceAddress'].'\''; ?>;
 </div>
 
 <div id="controls" onmouseout="HideControls()">
-<input id="Pause" type="button" onclick="clockStart(this)" value="Start">
+<input id="Pause" type="button" onclick="clockToggle(this)" value="Start">
 Level: <select id="LevelSelect" onchange="ChangeLevel()">
 </select>
 Repeat Forever:<input type="checkbox" id="RepeatForever">
