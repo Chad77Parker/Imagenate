@@ -25,10 +25,10 @@ if (file_exists($filepath)) {
 ?>
 <html>
 <head>
-<script src="http://code.responsivevoice.org/responsivevoice.js"></script>
+
 <link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah" rel="stylesheet">
 <link href="data/Imagenate.css "rel="stylesheet" type="text/css">
-
+<script src="https://code.responsivevoice.org/responsivevoice.js?key=EbDooWoy"></script>
 <script type="text/javascript">
 var myJSON = <?php $myJSON = trim(preg_replace('/\s+/', ' ', $myJSON)); echo '\''.$myJSON.'\''; ?> ;
 var DeviceIP =  <?php echo '\''.$_SESSION['DeviceAddress'].'\''; ?>;
@@ -41,15 +41,15 @@ var DeviceIP =  <?php echo '\''.$_SESSION['DeviceAddress'].'\''; ?>;
 </div>
 
 <div id="controls" onmouseout="HideControls()">
-<input type="button" onclick="clockStart()" value="Start">
-<input type="button" onclick="clockStop()" value="Stop">
+<input id="Pause" type="button" onclick="clockToggle(this)" value="Start">
 Level: <select id="LevelSelect" onchange="ChangeLevel()">
 </select>
 Repeat Forever:<input type="checkbox" id="RepeatForever">
-Audio On:<input type="checkbox" id="AudioOn" onclick="ToggleAudio(this)">
+Audio:<input type="checkbox" id="AudioOn" onclick="ToggleAudio(this)">
 <select id="ChooseVoice"> </select>
 <input type="button" onclick="ShowHideOutput()" value="Show/Hide Output">
-No Hardware<input type="checkbox" id="NoHardware">
+No Hardware:<input type="checkbox" id="NoHardware">
+Max volts:<input type="range" id="MaxVolts" onchange="setMaxVolts(this)" min="0" max="100" value="60">
 <input type="button" value="Return Home" onclick="document.forms[0].submit();">
 </div>
 
@@ -72,7 +72,8 @@ SV2<input type="range" id="sv2" value=90 max=180> <br>
 TENS<input type="radio" id="tens" >
 MOD<input type="textbox" id="mod" >
 FREQ<input type="textbox" id="freq" >
-PULSE<input type="textbox" id="pulse" > <br>
+PULSE<input type="textbox" id="pulse" >
+VOLT<input type="textbox" id="volt"><br>
 LOOP ARGS<input type="textbox" id="looptxt">
   <div id="myProgress">
   <div id="myBar"></div>
@@ -81,7 +82,7 @@ LOOP ARGS<input type="textbox" id="looptxt">
 
 <div id="outputobjects">
 <p id="rxHTML">
-<object id="ReturnHTML" type="text/html" onload="RequestHTML()" data=""></object>
+<object id="ReturnHTML" type="text/html" onload="RequestHTML()" onerror="FailedLoad()" data=""></object>
 </p>
 </div>
 
