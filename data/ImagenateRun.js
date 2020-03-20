@@ -19,12 +19,18 @@ function ShowHideOutput(){
     document.getElementById("output").style.display = "block"
   }
 }
+var FailCount=0
+function FailedLoad(){
+    FailCount++
+    console.log(FailCount+"failed loads")
+    RequestHTML()
+}
 
 function RequestHTML(){
     var date = new Date()
     PreviousTime = date.getTime()
-    if(NewResourceFlag&&(requestHstack.length > 0)){
-      clockStop()
+    if(requestHstack.length > 0){
+      if(timerId){clockStart(document.getElementById("Pause"))}
       var myReturn = document.getElementById("ReturnHTML");
       myReturn.data =  requestHstack.shift()
       console.log("attempting to load:"+ myReturn.data)
@@ -53,11 +59,8 @@ function doc_keyUp(e) {
                 break;
         case 13:
              //on "enter" toggle clock start/stop
-             if(timerId){
-               clockStop();
-             }else{clockStart();
-           }
-           break;
+             clockStart(document.getElementById("Pause"));
+             break;
         case 86:
              // on "v" toggle voice on/off
              document.getElementById("AudioOn").checked = !document.getElementById("AudioOn").checked;
@@ -82,7 +85,6 @@ function doc_keyUp(e) {
         default:
              //on anything else skip to next step
              var date = new Date()
-             clockStop()
              PreviousTime=date.getTime() - 3600000
              update()
              break;
@@ -146,7 +148,7 @@ function S3On(){
 function S3Off(){
   document.getElementById("s3").checked = false
  if(document.getElementById("NoHardware").checked != true){
-   requestHstack.push("http://" + DeviceIP + "/s30ff")
+   requestHstack.push("http://" + DeviceIP + "/s3off")
  }
  }
 
@@ -181,10 +183,14 @@ function Pulse(val){
   document.getElementById("pulse").value = val
 }
 
+function Volt(val){
+  document.getElementById("volt").value = val
+}
+
 function TensOn(){
   document.getElementById("tens").checked = true
   if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/tenson?m=" + document.getElementById("mod").value + "&f=" + document.getElementById("freq").value + "&p=" + document.getElementById("pulse").value)
+  requestHstack.push("http://" + DeviceIP + "/tenson?m=" + document.getElementById("mod").value + "&f=" + document.getElementById("freq").value + "&p=" + document.getElementById("pulse").value + "&v=" + document.getElementById("volt").value)
  }
  }
 
@@ -253,6 +259,11 @@ function Loopinit(value){
  document.getElementById("looptxt").value = value
 }
 
+function setMaxVolts(x){
+  if(document.getElementById("NoHardware").checked != true){
+    requestHstack.push("http://" + DeviceIP + "/tensmaxvolts?v=" + x.value)
+  }
+}
 
 var LevelCount = 0
 var StepCount = 0
@@ -326,6 +337,9 @@ function update() {
         }
         if (myObj.LEVELS[LevelCount].STEPS[StepCount].PULSE){
            Pulse(myObj.LEVELS[LevelCount].STEPS[StepCount].PULSE)
+        }
+        if (myObj.LEVELS[LevelCount].STEPS[StepCount].VOLT){
+           Volt(myObj.LEVELS[LevelCount].STEPS[StepCount].VOLT)
         }
         if (myObj.LEVELS[LevelCount].STEPS[StepCount].TENS){
            if (myObj.LEVELS[LevelCount].STEPS[StepCount].TENS == "ON"){
@@ -414,7 +428,7 @@ function update() {
           LevelCount = 0
           RepeatCount = 0
           StepCount = 0
-          clockStop()
+          if(timerId){clockStart(document.getElementById("Pause"))}
           document.getElementById("LevelSelect" ).selectedIndex = LevelCount
           return
         }
@@ -422,7 +436,7 @@ function update() {
 
   }
   if(requestHstack.length == 0){
-    timerId = setTimeout(update, 1000)
+    if(!timerId){timerId = setTimeout(update, 1000)}
   }else{
      RequestHTML()
   }
@@ -430,10 +444,16 @@ function update() {
 }
 
 
-function clockStart() {
+function clockStart(x) {
+  if(x.value=="Stop"){
+    clockStop()
+    x.value="Start"
+  }else{
   console.log('start')
+  x.value="Stop"
   if (timerId) return
   update()
+  }
 }
 
 function clockStop() {
@@ -498,18 +518,19 @@ function SetNextSrc(source){
           NewResourceFlag=false
          }
          if(source.indexOf(".jaz")>0){
-           preloadLink.setAttribute("as", "image")
            preloadLink.href = source
+           preloadLink.as= "image"
            NewResourceFlag=false
          }
          if(source.indexOf(".faK")>0){
-           preloadLink.setAttribute("as", "audio")
            preloadLink.href = source
+           preloadLink.setAttribute("as", "audio")
            NewResourceFlag=false
          }
 }
 function NewResourceLoaded(){
   NewResourceFlag=true
+  console.log("preload complete")
   RequestHTML()
 }
 function SetBackground(){
@@ -521,7 +542,7 @@ function SetBackground(){
          if(preloadLink.getAttribute("as")=="video"){
          // console.log("play video")
          document.getElementById("vid").style.display = "block"
-         document.addEventListener('keydown', () => { video.play(); })
+         //document.addEventListener('keydown', () => { video.play(); })
          video.src = preloadLink.href
          video.type = "video/mp4"
          video.play()
