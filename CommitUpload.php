@@ -163,7 +163,7 @@ if(isset($_POST['FileName'])){
 $Level = "";
 $FirstStep = True;
 $s1=$s2=$s3=$s4=$vac=$playonce=$pump=$tens='off';
-$mod=$freq=$pulse=$sv1=$sv2=$txt=$loop=$img="";
+$mod=$freq=$pulse=$volt=$sv1=$sv2=$txt=$loop=$img="";
 if (isset($_POST['FileName'])){
 
      $myString = '{"NAME":"'.$_POST['Program'].'", "LEVELS":[';
@@ -296,6 +296,11 @@ while ($StepCount < count($_POST['Level'])){
      $tensupdate = true;
      $tens = "on";
   }
+  if ($_POST['Volt'][$StepCount]!= $volt){
+     $volt = $_POST['Volt'][$StepCount];
+     $tensupdate = true;
+     $tens = "on";
+  }
   if (isset($_POST['Tens'][$StepCount])){
     if($StepCount==0||$_POST['Tens'][$StepCount]!=$_POST['Tens'][$StepCount-1]){
       if ($_POST['Tens'][$StepCount]== "true"){
@@ -314,6 +319,7 @@ while ($StepCount < count($_POST['Level'])){
       $myString = $myString.'"MOD":"'.$_POST['Mod'][$StepCount].'", ';
       $myString = $myString.'"FREQ":"'.$_POST['Freq'][$StepCount].'", ';
       $myString = $myString.'"PULSE":"'.$_POST['Pulse'][$StepCount].'", ';
+      $myString = $myString.'"VOLT":"'.$_POST['Volt'][$StepCount].'", ';
   }
 
 

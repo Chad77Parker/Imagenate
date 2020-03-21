@@ -75,13 +75,14 @@ include 'ccrypt.php';
 $dirs = array_slice(scandir('img'), 2);
 $f = 0;
 foreach($dirs as $value){
-
+    if($value!="Backgrounds"){
     $imagefiles = array_slice(scandir('img/'.$value.'/slide'), 2);
     $i = 1;
     $images[$f][0]=$value;
     foreach($imagefiles as $imagevalue){
       $images[$f][$i]=$imagevalue;
       $i++;
+    }
     }
     $f++;
 
@@ -93,6 +94,7 @@ $myString = '{"NAME":"Slideshow", "LEVELS":[';
 
      $LevelCount=0;
 while ($LevelCount < count($dirs)){
+       if($dirs[$LevelCount]=="Backgrounds"||$dirs[$LevelCount]==".."||$dirs[$LevelCount]=="."){$LevelCount++;}
        $Level = $dirs[$LevelCount];
        $myString = $myString.'{"TYPE":"'.decryptfilename($dirs[$LevelCount]).'", "REPEAT":"99", "STEPS":[';
         $StepCount = 1;
@@ -100,7 +102,16 @@ while ($LevelCount < count($dirs)){
         while($StepCount < count($images[$LevelCount])){
            if($images[$LevelCount][$StepCount]!="thumb" && $images[$LevelCount][$StepCount]!="slide"){
              if (!$fStep){$myString = $myString.', ';}
-             $myString = $myString.'{"DELAY":"4", "SRC":"imagedecode.php?filename=img/'.$dirs[$LevelCount].'/slide/'.$images[$LevelCount][$StepCount].'", "TXT":"'.decryptfilename($dirs[$LevelCount]).'"}';
+             $src ='imagedecode.php?filename=img/'.$dirs[$LevelCount].'/slide/'.$images[$LevelCount][$StepCount];
+             $delay =4;
+             if(strpos($images[$LevelCount][$StepCount],".faL")>0){  //check if file is mp4
+              $src= 'img/'.$dirs[$LevelCount].'/slide/'.$images[$LevelCount][$StepCount];
+              $delay = 10;
+             }elseif(strpos($images[$LevelCount][$StepCount],".faK")>0){  //check if file is mp3
+              $src= 'img/'.$dirs[$LevelCount].'/slide/'.$images[$LevelCount][$StepCount];
+              $delay = 7;
+             }
+             $myString = $myString.'{"DELAY":"'.$delay.'", "SRC":"'.$src.'", "TXT":"'.decryptfilename($dirs[$LevelCount]).'"}';
              //to update pics
              if(!file_exists('img/'.$dirs[$LevelCount].'/slide/'.$images[$LevelCount][$StepCount])){
              echo '<img src="image.php?image_name='.$images[$LevelCount][$StepCount].'&style=slide&image_path=img/'.$dirs[$LevelCount].'" >';

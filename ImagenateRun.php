@@ -41,7 +41,7 @@ var DeviceIP =  <?php echo '\''.$_SESSION['DeviceAddress'].'\''; ?>;
 </div>
 
 <div id="controls" onmouseout="HideControls()">
-<input id="Pause" type="button" onclick="clockToggle(this)" value="Start">
+<input id="Pause" type="button" onclick="clockToggle()" value="Start">
 Level: <select id="LevelSelect" onchange="ChangeLevel()">
 </select>
 Repeat Forever:<input type="checkbox" id="RepeatForever">
@@ -82,7 +82,7 @@ LOOP ARGS<input type="textbox" id="looptxt">
 
 <div id="outputobjects">
 <p id="rxHTML">
-<object id="ReturnHTML" type="text/html" onload="RequestHTML()" onerror="FailedLoad()" data=""></object>
+<object id="ReturnHTML" type="text/html" onload="SuccessLoad()" onerror="FailedLoad()" data=""></object>
 </p>
 </div>
 

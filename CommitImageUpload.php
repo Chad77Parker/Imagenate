@@ -27,8 +27,7 @@ if ($fn) {
         if(strpos($fn,".mp4")>0){
            //generate thumbnail from video
            file_put_contents('./img/'.$myDir.'/slide/'.$newname, $myBlob );
-           echo '<img src="./img/Backgrounds/movieicon.jpg">';
-           copy("./img/Backgrounds/movieicon.jpg", "./img/".$myDir."/thumb/".$newname.".jpg");
+           echo '<object data="./thumbfromvideo.php?filename=./img/'.$myDir.'/slide/'.$newname.'&thumbpath=./img/'.$myDir.'/thumb"></object>';
         }elseif(strpos($fn,".mp3")>0){
            file_put_contents('./img/'.$myDir.'/slide/'.$newname, $myBlob );
            echo '<img src="./img/Backgrounds/audioicon.jpg">';
@@ -47,16 +46,15 @@ else {
  $htmlString ='';
   foreach ($files['error'] as $id => $err) {
 		if ($err == UPLOAD_ERR_OK) {
-			$namefile = $files['name'][$id];
-   		$newname = cryptfilename($namefile);
+			$fn = $files['name'][$id];
+   		$newname = cryptfilename($fn);
       $myBlob = file_get_contents($files['tmp_name'][$id]);
       $myBlob = cryptfile($myBlob, MainKey);
-      echo "<p>File $namefile uploaded.</p>";
+      echo "<p>File $fn uploaded.</p>";
       if(strpos($fn,".mp4")>0){
            //generate thumbnail from video
            file_put_contents('./img/'.$myDir.'/slide/'.$newname, $myBlob );
-           $htmlString += '<img src="./img/Backgrounds/movieicon.jpg">';
-           copy("./img/Backgrounds/movieicon.jpg", "./img/".$myDir."/thumb/".$newname.".jpg");
+           $htmlString += '<object data="./thumbfromvideo.php?filename=./img/'.$myDir.'/slide/'.$newname.'&thumbpath=./img/'.$myDir.'/thumb"></object>';
         }elseif(strpos($fn,".mp3")>0){
            file_put_contents('./img/'.$myDir.'/slide/'.$newname, $myBlob );
            $htmlString += '<img src="./img/Backgrounds/audioicon.jpg">';
