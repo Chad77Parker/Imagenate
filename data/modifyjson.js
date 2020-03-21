@@ -53,6 +53,7 @@ preRec<0?sv2 = "90":sv2 = document.getElementById('Sv2_'+preRec).value
 preRec<0?mod = "0":mod = document.getElementById('Mod_'+preRec).value
 preRec<0?freq = "0":freq = document.getElementById('Freq_'+preRec).value
 preRec<0?pulse = "0":pulse = document.getElementById('Pulse_'+preRec).value
+preRec<0?volt = "0":volt = document.getElementById('Volt_'+preRec).value
 preRec<0?largs = "s1onm=0&s1offm=0&s2onm=0&s2offm=0&s3onm=0&s3offm=0&s4onm=0&s4offm=0&vaconm=0&vacoffm=0&pumponm=0&pumpoffm=0&sv1onm=0&sv1onp=0&sv1offm=0&sv1offp=0&sv2onm=0&sv2onp=0&sv2offm=0&sv2offp=0&loopt=0":largs = document.getElementById('Loop_'+preRec).value
 preRec<0?modms = "0":modms = document.getElementById('Modms_'+preRec).value
 preRec<0?freqhz = "0":freqhz = document.getElementById('Freqhz_'+preRec).value
@@ -90,6 +91,7 @@ myInHTML=myInHTML+'<td class="tdclear">'
 myInHTML=myInHTML+'Modulation(s)<input type="textbox" id="Modms_'+thisRec+'" value="'+modms+'" oninput=upInHTML(this) class="numfield"><input type="hidden" id="Mod_'+thisRec+'" name="Mod['+thisRec+']" class="numfield" value="'+mod+'" oninput=upInHTML(this)>'
 myInHTML=myInHTML+'Frequency(Hz)<input type="textbox" id="Freqhz_'+thisRec+'" value="'+freqhz+'" oninput=upInHTML(this) class="numfield"><input type="hidden" id="Freq_'+thisRec+'" name="Freq['+thisRec+']" class="numfield" value="'+freq+'" oninput=upInHTML(this)>'
 myInHTML=myInHTML+'PulseWidth(us)<input type="textbox" id="Pulsepc_'+thisRec+'" value="'+pulsepc+'" oninput=upInHTML(this) class="numfield"><input type="hidden" id="Pulse_'+thisRec+'" name="Pulse['+thisRec+']" class="numfield" value="'+pulse+'" oninput=upInHTML(this)>'
+myInHTML=myInHTML+'Volts(V)<input type="textbox" id="Volts_'+thisRec+'" value="'+volts+'" oninput=upInHTML(this) class="numfield"><input type="hidden" id="Volt_'+thisRec+'" name="Volt['+thisRec+']" class="numfield" value="'+volt+'" oninput=upInHTML(this)>'
 myInHTML=myInHTML+'LoopArgs<input type="textbox" id ="Loop_'+thisRec+'" name="Loop['+thisRec+']" class="remaining" value="'+largs+'" oninput=upInHTML(this)>'
 myInHTML=myInHTML+'<input type="hidden" id="Image_'+thisRec+'" name="Image['+thisRec+']" class="numfield" value="" oninput=upInHTML(this)>'
 myInHTML=myInHTML+'</td>'

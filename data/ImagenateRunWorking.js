@@ -1,18 +1,8 @@
-//Global Variables
-var requestHstack = []
+﻿var requestHstack = []
 var PreviousTime
 var timerId
-var errorTimer
 var myObj = JSON.parse(myJSON)
 var NewResourceFlag = true
-var FailCount=0
-var LevelCount = 0
-var StepCount = 0
-var RepeatCount = 0
-var Delay =  0
-var Imp = 0
-
-//menu and display functions
 function ShowControls(){
    document.getElementById("controls").style.display = "block"
 }
@@ -30,17 +20,28 @@ function ShowHideOutput(){
   }
 }
 
-function ToggleAudio(audiocheck){
-video = document.getElementById("myVideo")
-audio = document.getElementById("myAudio")
-console.log(!!audiocheck.checked)
-if (!audiocheck.checked){
-  audio.muted=true
-  video.muted=true
-}else{
-  audio.muted=false
-  video.muted=false
-}
+function RequestHTML(){
+    var date = new Date()
+    PreviousTime = date.getTime()
+    if(NewResourceFlag&&(requestHstack.length > 0)){
+      clockStop()
+      var myReturn = document.getElementById("ReturnHTML");
+      myReturn.data =  requestHstack.shift()
+      console.log("attempting to load:"+ myReturn.data)
+      var clone = myReturn.cloneNode(true);
+      var parent = myReturn.parentNode;
+      parent.removeChild(myReturn );
+      parent.appendChild(clone );
+    }else{
+      var imageP
+      if(imageP==null){
+      if(!timerId){
+        PreviousTime = date.getTime()
+        console.log('previos time set to'+PreviousTime)
+        timerId = setTimeout(update, 1000)
+      }
+      }
+    }
 }
 
 function doc_keyUp(e) {
@@ -52,8 +53,11 @@ function doc_keyUp(e) {
                 break;
         case 13:
              //on "enter" toggle clock start/stop
-             clockToggle(document.getElementById("Pause"));
-             break;
+             if(timerId){
+               clockStop();
+             }else{clockStart();
+           }
+           break;
         case 86:
              // on "v" toggle voice on/off
              document.getElementById("AudioOn").checked = !document.getElementById("AudioOn").checked;
@@ -78,6 +82,7 @@ function doc_keyUp(e) {
         default:
              //on anything else skip to next step
              var date = new Date()
+             clockStop()
              PreviousTime=date.getTime() - 3600000
              update()
              break;
@@ -103,129 +108,159 @@ function NextLevel(){
         ImageProgress()
 }
 
-function ChangeLevel(){
-        StepCount = 0
-        RepeatCount = 0
-        Delay = 0
-        LevelCount = document.getElementById("LevelSelect" ).selectedIndex
-        if(typeof myObj.LEVELS[LevelCount].STEPS[0].TXT !== 'undefined'){
-                  document.getElementById("Notice").innerHTML = myObj.LEVELS[LevelCount].STEPS[0].TXT
-                  if(document.getElementById("AudioOn").checked){responsiveVoice.speak(myObj.LEVELS[LevelCount].STEPS[StepCount].TXT, document.getElementById("ChooseVoice").value)}
-                  }
-        SetNextSrc(myObj.LEVELS[LevelCount].STEPS[0].SRC)
-        ImageProgress()
-        SetBackground()
-        }
-
-function ImageProgress(){
-      var elem = document.getElementById("myBar");
-      var width = 1;
-      var imageP = setInterval(frame, 10);
-      preloadLink = document.getElementById("preload_src")
-      function frame() {
-               if (NewResourceFlag||width>99) {
-                  clearInterval(imageP);
-                  imageP=null;
-                  if(elem!=null){
-                      elem.style.width = '100%';}
-                  Imp = 0;
-               } else {
-                  if(Imp>10){
-                  width++
-                  Imp=0
-               }
-               Imp++
-               if(elem!=null){
-                  elem.style.width = width + '%';}
-               }
-      }
+function S1On(){
+  document.getElementById("s1").checked = true
+  if(document.getElementById("NoHardware").checked != true){
+    requestHstack.push("http://" + DeviceIP + "/s1on")
+  }
 }
 
-function clockStart() {
- console.log('start')
- document.getElementById('Pause').value = "Stop"
-  if (timerId) return
- timerId = setTimeout(update, 1000)
+function S1Off(){
+  document.getElementById("s1").checked = false
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/s1off")
+}
 }
 
-function clockStop() {
-  console.log('stop')
-  document.getElementById('Pause').value = "Start"
-  clearTimeout(timerId)
-  timerId = null
+function S2On(){
+  document.getElementById("s2").checked = true
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/s2on")
+}
 }
 
-function clockToggle() {
-   if(timerId){
-     clockStop()
-   }else{
-     clockStart()
-   }
+function S2Off(){
+  document.getElementById("s2").checked = false
+ if(document.getElementById("NoHardware").checked != true){
+   requestHstack.push("http://" + DeviceIP + "/s2off")
+  }
+  }
+
+function S3On(){
+  document.getElementById("s3").checked = true
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/s3on")
+  }
 }
 
-//running functions
-/*Description of flow
- *clock start button pushed
- *call update function
-       -update clock display
-       -if delay time has expired then
-           -check json file and add any events to HStack and change image
-           -if there are events in Hstack call RequestHTML()
-           -RequestHTML if Hstack not empty
-                -loads a html into an object, and the onload event calls RequestHTML() again
-                -else, set timeout for 1 sec and call update()
-       -set timeout for 1 sec and call update again
+function S3Off(){
+  document.getElementById("s3").checked = false
+ if(document.getElementById("NoHardware").checked != true){
+   requestHstack.push("http://" + DeviceIP + "/s30ff")
+ }
+ }
 
-*/
+function S4On(){
+  document.getElementById("s4").checked = true
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/s4on")
+ }
+ }
 
-function FailedLoad(){
-    FailCount++
-    console.log(FailCount+"failed loads")
-    if(FailCount > 3){
-      requestHstack.length = 0
-      document.getElementById("NoHardware").checked = true
-    }
-    RequestHTML()
+function S4Off(){
+  document.getElementById("s4").checked = false
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/s4off")
+ }
+ }
+function PLAYONCEOn(){
+  document.getElementById("myAudio").loop=false
+}
+function PLAYONCEOff(){
+  document.getElementById("myAudio").loop=true
+}
+function Mod(val){
+  document.getElementById("mod").value = val
 }
 
-function SuccessLoad() {
-  FailCount=0
-  console.log("Successfully loaded HTML")
-  RequestHTML()
+function Freq(val){
+  document.getElementById("freq").value = val
 }
 
-function RequestHTML(){
-    clearTimeout(errorTimer)
-    var date = new Date()
-    PreviousTime = date.getTime()
-    if((requestHstack.length > 0)&&!document.getElementById("NoHardware").checked){
-      clockStop()
-      var myReturn = document.getElementById("ReturnHTML");
-      myReturn.data =  requestHstack.shift()
-      console.log("attempting to load:"+ myReturn.data)
-      var clone = myReturn.cloneNode(true);
-      var parent = myReturn.parentNode;
-      parent.removeChild(myReturn );
-      parent.appendChild(clone );
-      errorTimer= setTimeout(FailedLoad,4000)
-    }else{
-      var imageP
-      if(imageP==null){
-      if(!timerId){
-        PreviousTime = date.getTime()
-        console.log('all html requests complete, previos time set to'+PreviousTime)
-        clockStart()
-      }
-      }
-    }
+function Pulse(val){
+  document.getElementById("pulse").value = val
+}
+
+function TensOn(){
+  document.getElementById("tens").checked = true
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/tenson?m=" + document.getElementById("mod").value + "&f=" + document.getElementById("freq").value + "&p=" + document.getElementById("pulse").value)
+ }
+ }
+
+function TensOff(){
+  document.getElementById("tens").checked = false
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/tensoff")
+}
+}
+
+function PumpOn(Limit){
+  if (Limit){
+      url = "http://" + DeviceIP + "/pumpon?value=" + Limit ;
+  } else {
+     url = "http://" + DeviceIP + "/pumpon";
+  }
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push(url)
+  }
+ document.getElementById("pump").checked = true
+}
+
+function PumpOff(){
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/pumpoff")
+  }
+ document.getElementById("pump").checked = false
+}
+
+function VacOn(Limit){
+  if (Limit){
+      url = "http://" + DeviceIP + "/vacon?value=" + Limit ;
+  } else {
+     url = "http://" + DeviceIP + "/vacon";
+  }
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push(url)
+  }
+ document.getElementById("vac").checked = true
+}
+
+function VacOff(){
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/vacoff")
+  }
+  document.getElementById("vac").checked = false
+}
+function Servo1(value){
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/servo1?pos=" + value)
+  }
+ document.getElementById("sv1").value = value
+}
+
+function Servo2(value){
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://" + DeviceIP + "/servo2?pos=" + value)
+  }
+ document.getElementById("sv2").value = value
+}
+
+function Loopinit(value){
+  if(document.getElementById("NoHardware").checked != true){
+  requestHstack.push("http://"+ DeviceIP + "/loop?" + value)
+  }
+ document.getElementById("looptxt").value = value
 }
 
 
+var LevelCount = 0
+var StepCount = 0
+var RepeatCount = 0
 
-
-
-
-
+SetNextSrc(myObj.LEVELS[0].STEPS[0].SRC)
+ImageProgress()
+var Delay =  0
 
 function update() {
   //update clock
@@ -291,9 +326,6 @@ function update() {
         }
         if (myObj.LEVELS[LevelCount].STEPS[StepCount].PULSE){
            Pulse(myObj.LEVELS[LevelCount].STEPS[StepCount].PULSE)
-        }
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].VOLT){
-           Volt(myObj.LEVELS[LevelCount].STEPS[StepCount].VOLT)
         }
         if (myObj.LEVELS[LevelCount].STEPS[StepCount].TENS){
            if (myObj.LEVELS[LevelCount].STEPS[StepCount].TENS == "ON"){
@@ -398,9 +430,56 @@ function update() {
 }
 
 
+function clockStart() {
+  console.log('start')
+  if (timerId) return
+  update()
+}
 
+function clockStop() {
+  console.log('stop')
+  clearTimeout(timerId)
+  timerId = null
+}
+var Imp = 0
 
+function ImageProgress(){
+      var elem = document.getElementById("myBar");
+      var width = 1;
+      var imageP = setInterval(frame, 10);
+      preloadLink = document.getElementById("preload_src")
+      function frame() {
+               if (NewResourceFlag||width>99) {
+               clearInterval(imageP);
+               imageP=null;
+               if(elem!=null){
+               elem.style.width = '100%';}
+               Imp = 0;
+               } else {
+               if(Imp>10){
+                 width++
+                 Imp=0
+               }
+        Imp++
+        if(elem!=null){
+        elem.style.width = width + '%';}
+    }
+  }
+}
 
+function ChangeLevel(){
+        StepCount = 0
+        RepeatCount = 0
+        Delay = 0
+        LevelCount = document.getElementById("LevelSelect" ).selectedIndex
+        if(typeof myObj.LEVELS[LevelCount].STEPS[0].TXT !== 'undefined'){
+                  document.getElementById("Notice").innerHTML = myObj.LEVELS[LevelCount].STEPS[0].TXT
+                  if(document.getElementById("AudioOn").checked){responsiveVoice.speak(myObj.LEVELS[LevelCount].STEPS[StepCount].TXT, document.getElementById("ChooseVoice").value)}
+                  }
+        SetNextSrc(myObj.LEVELS[LevelCount].STEPS[0].SRC)
+        ImageProgress()
+        SetBackground()
+        }
 
 function SetNextSrc(source){
          preloadLink = document.getElementById("preload_src")
@@ -419,19 +498,18 @@ function SetNextSrc(source){
           NewResourceFlag=false
          }
          if(source.indexOf(".jaz")>0){
+           preloadLink.setAttribute("as", "image")
            preloadLink.href = source
-           preloadLink.as= "image"
            NewResourceFlag=false
          }
          if(source.indexOf(".faK")>0){
-           preloadLink.href = source
            preloadLink.setAttribute("as", "audio")
+           preloadLink.href = source
            NewResourceFlag=false
          }
 }
 function NewResourceLoaded(){
   NewResourceFlag=true
-  console.log("preload complete")
   RequestHTML()
 }
 function SetBackground(){
@@ -461,7 +539,18 @@ function SetBackground(){
          }
 }
 
-
+function ToggleAudio(audiocheck){
+video = document.getElementById("myVideo")
+audio = document.getElementById("myAudio")
+console.log(!!audiocheck.checked)
+if (!audiocheck.checked){
+  audio.muted=true
+  video.muted=true
+}else{
+  audio.muted=false
+  video.muted=false
+}
+}
 
 function initialise(){
  try{
@@ -476,7 +565,6 @@ function initialise(){
  if(typeof myObj.LEVELS[0].STEPS[0].TXT !== 'undefined'){
   document.getElementById("Notice").innerHTML = myObj.LEVELS[0].STEPS[0].TXT
  }
- ImageProgress()
  SetNextSrc(myObj.LEVELS[0].STEPS[0].SRC)
  SetBackground()
  for (i=0; i < myObj.LEVELS.length; i++){
@@ -488,160 +576,4 @@ function initialise(){
  console.log(DeviceIP)
  if(DeviceIP == "Enter device ip address"){document.getElementById("NoHardware").checked = true}
  clockStop()
-}
-
-//functions to run
-function S1On(){
-  document.getElementById("s1").checked = true
-  if(document.getElementById("NoHardware").checked != true){
-    requestHstack.push("http://" + DeviceIP + "/s1on")
-  }
-}
-
-function S1Off(){
-  document.getElementById("s1").checked = false
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/s1off")
-}
-}
-
-function S2On(){
-  document.getElementById("s2").checked = true
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/s2on")
-}
-}
-
-function S2Off(){
-  document.getElementById("s2").checked = false
- if(document.getElementById("NoHardware").checked != true){
-   requestHstack.push("http://" + DeviceIP + "/s2off")
-  }
-  }
-
-function S3On(){
-  document.getElementById("s3").checked = true
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/s3on")
-  }
-}
-
-function S3Off(){
-  document.getElementById("s3").checked = false
- if(document.getElementById("NoHardware").checked != true){
-   requestHstack.push("http://" + DeviceIP + "/s3off")
- }
- }
-
-function S4On(){
-  document.getElementById("s4").checked = true
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/s4on")
- }
- }
-
-function S4Off(){
-  document.getElementById("s4").checked = false
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/s4off")
- }
- }
-function PLAYONCEOn(){
-  document.getElementById("myAudio").loop=false
-}
-function PLAYONCEOff(){
-  document.getElementById("myAudio").loop=true
-}
-function Mod(val){
-  document.getElementById("mod").value = val
-}
-
-function Freq(val){
-  document.getElementById("freq").value = val
-}
-
-function Pulse(val){
-  document.getElementById("pulse").value = val
-}
-
-function Volt(val){
-  document.getElementById("volt").value = val
-}
-
-function TensOn(){
-  document.getElementById("tens").checked = true
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/tenson?m=" + document.getElementById("mod").value + "&f=" + document.getElementById("freq").value + "&p=" + document.getElementById("pulse").value + "&v=" + document.getElementById("volt").value)
- }
- }
-
-function TensOff(){
-  document.getElementById("tens").checked = false
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/tensoff")
-}
-}
-
-function PumpOn(Limit){
-  if (Limit){
-      url = "http://" + DeviceIP + "/pumpon?value=" + Limit ;
-  } else {
-     url = "http://" + DeviceIP + "/pumpon";
-  }
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push(url)
-  }
- document.getElementById("pump").checked = true
-}
-
-function PumpOff(){
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/pumpoff")
-  }
- document.getElementById("pump").checked = false
-}
-
-function VacOn(Limit){
-  if (Limit){
-      url = "http://" + DeviceIP + "/vacon?value=" + Limit ;
-  } else {
-     url = "http://" + DeviceIP + "/vacon";
-  }
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push(url)
-  }
- document.getElementById("vac").checked = true
-}
-
-function VacOff(){
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/vacoff")
-  }
-  document.getElementById("vac").checked = false
-}
-function Servo1(value){
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/servo1?pos=" + value)
-  }
- document.getElementById("sv1").value = value
-}
-
-function Servo2(value){
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/servo2?pos=" + value)
-  }
- document.getElementById("sv2").value = value
-}
-
-function Loopinit(value){
-  if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://"+ DeviceIP + "/loop?" + value)
-  }
- document.getElementById("looptxt").value = value
-}
-
-function setMaxVolts(x){
-  if(document.getElementById("NoHardware").checked != true){
-    requestHstack.push("http://" + DeviceIP + "/tensmaxvolts?v=" + x.value)
-  }
 }
