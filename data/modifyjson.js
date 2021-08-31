@@ -250,7 +250,7 @@ function LoadJSON() {
 var Steps = 0
 var LevelCount = 0
 var StepCount = 0
-
+AddRecord()
 //check for end of levels
 while(LevelCount<myObj.LEVELS.length){
    document.getElementById("Program").value=myObj.NAME

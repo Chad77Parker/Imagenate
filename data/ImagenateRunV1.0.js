@@ -11,8 +11,7 @@ var StepCount = 0
 var RepeatCount = 0
 var Delay =  0
 var Imp = 0
-var HoldLevelIndex = false
-var HoldLevelStep = 0
+
 //menu and display functions
 function ShowControls(){
    document.getElementById("controls").style.display = "block"
@@ -45,19 +44,12 @@ if (!audiocheck.checked){
 }
 
 function doc_keyUp(e) {
-   switch (e.keyCode) {
-        case 46, 190:
-                //on "." or "n" go to next level
+        // this would test for whichever key is 32 and the ctrl key at the same time
+    switch (e.keyCode) {
+        case 32:
+                //on "space" go to next level
                 NextLevel();
                 break;
-        case 44, 188:
-                 //on "," or "p" go to previous level
-                 PreviousLevel()
-                 break;
-        case 72:
-                 //on "h" go to hold
-                 HoldLevel()
-                 break;
         case 13:
              //on "enter" toggle clock start/stop
              clockToggle();
@@ -71,8 +63,8 @@ function doc_keyUp(e) {
                 document.getElementById("Notice").style.display="block"
              }
              break;
-        case 68:
-             //on "d" toggle no hardware on/off
+        case 72:
+             //on "h" toggle no hardware on/off
              document.getElementById("NoHardware").checked = !document.getElementById("NoHardware").checked;
              break;
         case 79:
@@ -82,10 +74,6 @@ function doc_keyUp(e) {
         case 82:
              // on "r" toggle repeat forever
              document.getElementById("RepeatForever").checked = !document.getElementById("RepeatForever").checked;
-             break;
-        case 67:
-             //on "c" go to finish
-             FinishLevel()
              break;
         default:
              //on anything else skip to next step
@@ -112,80 +100,7 @@ function NextLevel(){
                   }
         document.getElementById("background").style.backgroundImage = "url( "+myObj.LEVELS[LevelCount].STEPS[0].SRC+")"
         document.getElementById("preload_src").href =  myObj.LEVELS[LevelCount].STEPS[0].SRC
-
-}
-
-function PreviousLevel(){
-        StepCount = 0
-        RepeatCount = 0
-        Delay = 0
-        LevelCount = document.getElementById("LevelSelect" ).selectedIndex - 1
-        if(LevelCount<0){LevelCount = 0}
-        document.getElementById("LevelSelect" ).selectedIndex = LevelCount
-        if(typeof myObj.LEVELS[LevelCount].STEPS[0].TXT !== 'undefined'){
-                  document.getElementById("Notice").innerHTML = myObj.LEVELS[LevelCount].STEPS[0].TXT
-                  if(document.getElementById("AudioOn").checked){responsiveVoice.speak(myObj.LEVELS[LevelCount].STEPS[StepCount].TXT, document.getElementById("ChooseVoice").value)}
-                  }
-        document.getElementById("background").style.backgroundImage = "url( "+myObj.LEVELS[LevelCount].STEPS[0].SRC+")"
-        document.getElementById("preload_src").href =  myObj.LEVELS[LevelCount].STEPS[0].SRC
-
-}
- function FinishLevel(){
-        StepCount = 0
-        RepeatCount = 0
-        Delay = 0
-        LevelCount = myObj.LEVELS.length-1
-        document.getElementById("LevelSelect" ).selectedIndex = LevelCount
-        if(typeof myObj.LEVELS[LevelCount].STEPS[0].TXT !== 'undefined'){
-                  document.getElementById("Notice").innerHTML = myObj.LEVELS[LevelCount].STEPS[0].TXT
-                  if(document.getElementById("AudioOn").checked){responsiveVoice.speak(myObj.LEVELS[LevelCount].STEPS[StepCount].TXT, document.getElementById("ChooseVoice").value)}
-                  }
-        document.getElementById("background").style.backgroundImage = "url( "+myObj.LEVELS[LevelCount].STEPS[0].SRC+")"
-        document.getElementById("preload_src").href =  myObj.LEVELS[LevelCount].STEPS[0].SRC
-
- }
- function HoldLevel(){
-        if(!HoldLevelIndex){
-          for(i=0;i<myObj.LEVELS.length;i++){
-          if(myObj.LEVELS[i].TYPE=="hold"||myObj.LEVELS[i].TYPE=="Hold"||myObj.LEVELS[i].TYPE=="HOLD"){
-            HoldLevelIndex=i
-            HoldLevelReturn=LevelCount
-            if(StepCount>0){
-              HoldLevelStep=StepCount-1}
-            else{
-              HoldLevelStep=myObj.LEVELS[LevelCount-1].STEPS.length
-            }
-            StepCount = 0
-            RepeatCount = 0
-            LevelCount = HoldLevelIndex
-            Delay = 0
-            document.getElementById("LevelSelect" ).selectedIndex = HoldLevelIndex
-            if(typeof myObj.LEVELS[LevelCount].STEPS[0].TXT !== 'undefined'){
-                  document.getElementById("Notice").innerHTML = myObj.LEVELS[LevelCount].STEPS[0].TXT
-                  if(document.getElementById("AudioOn").checked){responsiveVoice.speak(myObj.LEVELS[LevelCount].STEPS[StepCount].TXT, document.getElementById("ChooseVoice").value)}
-                  }
-            document.getElementById("background").style.backgroundImage = "url( "+myObj.LEVELS[LevelCount].STEPS[0].SRC+")"
-            document.getElementById("preload_src").href =  myObj.LEVELS[LevelCount].STEPS[0].SRC
-
-          break
-          }
-          }
-        }else{
-            HoldLevelIndex = false
-            StepCount = HoldLevelStep
-            LevelCount = HoldLevelReturn
-            RepeatCount = 0
-            Delay = 0
-            LevelCount = HoldLevelReturn
-            document.getElementById("LevelSelect" ).selectedIndex = HoldLevelReturn
-            if(typeof myObj.LEVELS[LevelCount].STEPS[HoldLevelStep].TXT !== 'undefined'){
-                  document.getElementById("Notice").innerHTML = myObj.LEVELS[LevelCount].STEPS[HoldLevelStep].TXT
-                  if(document.getElementById("AudioOn").checked){responsiveVoice.speak(myObj.LEVELS[LevelCount].STEPS[StepCount].TXT, document.getElementById("ChooseVoice").value)}
-                  }
-            document.getElementById("background").style.backgroundImage = "url( "+myObj.LEVELS[LevelCount].STEPS[HoldLevelStep].SRC+")"
-            document.getElementById("preload_src").href =  myObj.LEVELS[LevelCount].STEPS[HoldLevelStep].SRC
-
-        }
+        ImageProgress()
 }
 
 function ChangeLevel(){
@@ -198,6 +113,7 @@ function ChangeLevel(){
                   if(document.getElementById("AudioOn").checked){responsiveVoice.speak(myObj.LEVELS[LevelCount].STEPS[StepCount].TXT, document.getElementById("ChooseVoice").value)}
                   }
         SetNextSrc(myObj.LEVELS[LevelCount].STEPS[0].SRC)
+        ImageProgress()
         SetBackground()
         }
 
@@ -205,20 +121,17 @@ function ImageProgress(Percentage){
       var elem = document.getElementById("myBar");
       if(elem!=null){
           elem.style.width = Percentage + '%';
-          elem.innerHTML = Percentage + '%';
       }
 }
 
 function clockStart() {
  console.log('start')
- document.getElementById("RunningIndicator").style.backgroundColor="green"
  document.getElementById('Pause').value = "Stop"
  timerId = setTimeout(update, 1000)
 }
 
 function clockStop() {
   console.log('stop')
-  document.getElementById("RunningIndicator").style.backgroundColor="red"
   document.getElementById('Pause').value = "Start"
   clearTimeout(timerId)
   timerId = null
@@ -253,7 +166,6 @@ function FailedLoad(){
     if(FailCount > 3){
       requestHstack.length = 0
       document.getElementById("NoHardware").checked = true
-      FailCount=0
     }
     RequestHTML()
 }
@@ -268,10 +180,8 @@ function RequestHTML(){
     clearTimeout(errorTimer)
     var date = new Date()
     PreviousTime = date.getTime()
-    if(document.getElementById("NoHardware").checked){requestHstack.length=0}
     if((requestHstack.length > 0)&&!document.getElementById("NoHardware").checked){
       clockStop()
-      document.getElementById("RunningIndicator").style.backgroundColor="green"
       var myReturn = document.getElementById("ReturnHTML");
       myReturn.data =  requestHstack.shift()
       console.log("attempting to load:"+ myReturn.data)
@@ -321,32 +231,32 @@ function update() {
      NewTime = date.getTime() - Delay
      if ( NewTime > PreviousTime){
 
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].TENS0){
-           if (myObj.LEVELS[LevelCount].STEPS[StepCount].TENS0 == "ON"){
-              Tens0On()
+        if (myObj.LEVELS[LevelCount].STEPS[StepCount].S1){
+           if (myObj.LEVELS[LevelCount].STEPS[StepCount].S1 == "ON"){
+              S1On()
            }else {
-                 Tens0Off()
+                 S1Off()
            }
         }
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].TENS1){
-           if (myObj.LEVELS[LevelCount].STEPS[StepCount].TENS1 == "ON"){
-              Tens1On()
+        if (myObj.LEVELS[LevelCount].STEPS[StepCount].S2){
+           if (myObj.LEVELS[LevelCount].STEPS[StepCount].S2 == "ON"){
+              S2On()
            }else {
-                 Tens1Off()
+                 S2Off()
            }
         }
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].TENS2){
-           if (myObj.LEVELS[LevelCount].STEPS[StepCount].TENS2 == "ON"){
-              Tens2On()
+        if (myObj.LEVELS[LevelCount].STEPS[StepCount].S3){
+           if (myObj.LEVELS[LevelCount].STEPS[StepCount].S3 == "ON"){
+              S3On()
            }else {
-                 Tens2Off()
+                 S3Off()
            }
         }
-        if (myObj.LEVELS[LevelCount].STEPS[StepCount].SQZ){
-           if (myObj.LEVELS[LevelCount].STEPS[StepCount].SQZ == "ON"){
-              SqueezeOn()
+        if (myObj.LEVELS[LevelCount].STEPS[StepCount].S4){
+           if (myObj.LEVELS[LevelCount].STEPS[StepCount].S4 == "ON"){
+              S4On()
            }else {
-                 SqueezeOff()
+                 S4Off()
            }
         }
         if (myObj.LEVELS[LevelCount].STEPS[StepCount].PLAYONCE){
@@ -396,6 +306,9 @@ function update() {
         if (myObj.LEVELS[LevelCount].STEPS[StepCount].SV1){
            Servo1(myObj.LEVELS[LevelCount].STEPS[StepCount].SV1)
         }
+        if (myObj.LEVELS[LevelCount].STEPS[StepCount].SV2){
+           Servo2(myObj.LEVELS[LevelCount].STEPS[StepCount].SV2)
+        }
         if (myObj.LEVELS[LevelCount].STEPS[StepCount].LOOP){
            Loopinit(myObj.LEVELS[LevelCount].STEPS[StepCount].LOOP)
         }
@@ -405,18 +318,22 @@ function update() {
            //if not end of level load next image in level
            if ((StepCount+1) < myObj.LEVELS[LevelCount].STEPS.length){
                SetNextSrc(myObj.LEVELS[LevelCount].STEPS[StepCount+1].SRC)
-               //if end of level
+               ImageProgress()
+           //if end of level
            }else{
            //if level is to repeat load first image in level
               if ((myObj.LEVELS[LevelCount].REPEAT && (myObj.LEVELS[LevelCount].REPEAT > RepeatCount))|| document.getElementById("RepeatForever").checked){
                  SetNextSrc(myObj.LEVELS[LevelCount].STEPS[0].SRC)
-                 }else{
+                 ImageProgress()
+              }else{
               //if not end of all levels, load first image from next level
                    if ((LevelCount+1) < myObj.LEVELS.length){
                       SetNextSrc(myObj.LEVELS[LevelCount+1].STEPS[0].SRC)
+                      ImageProgress()
               //otherwise all levels and steps finished, load first image
                    }else{
                       SetNextSrc(myObj.LEVELS[0].STEPS[0].SRC)
+                      ImageProgress()
                    }
               }
            }
@@ -424,8 +341,6 @@ function update() {
         if (typeof myObj.LEVELS[LevelCount].STEPS[StepCount].TXT !== 'undefined'){
            document.getElementById("Notice").innerHTML = myObj.LEVELS[LevelCount].STEPS[StepCount].TXT
            if(document.getElementById("AudioOn").checked){responsiveVoice.speak(myObj.LEVELS[LevelCount].STEPS[StepCount].TXT, document.getElementById("ChooseVoice").value)}
-        }else{
-           document.getElementById("Notice").innerHTML = ""
         }
         Delay = Number(myObj.LEVELS[LevelCount].STEPS[StepCount].DELAY)*1000
         StepCount++
@@ -477,7 +392,7 @@ function SetNextSrc(source){
            preloadLink=document.createElement("link")
            preloadLink.setAttribute("id",'preload_src')
            preloadLink.setAttribute("rel",'preload')
-           preloadLink.setAttribute("href",'img/Backgrounds/slide/ErrorBG.jpg')
+           preloadLink.setAttribute("href",'img\Backgrounds\slide\orangeBG.jpg')
            preloadLink.setAttribute("as",'image')
            document.getElementsByTagName("head")[0].appendChild(preloadLink)
            preloadLink.setAttribute("onload","NewResourceLoaded()")
@@ -490,26 +405,12 @@ function SetNextSrc(source){
          xmlHTTP.onload = function( e ) {
             var h = xmlHTTP.getAllResponseHeaders(),
             m = h.match( /^Content-Type\:\s*(.*?)$/mi ),
-            mimeType = m?m[ 1 ]:'video/mp4';
+            mimeType = m[ 1 ] || 'image/png';
             // Remove your progress bar or whatever here. Load is done.
 
             var blob = new Blob( [ this.response ], { type: mimeType } );
-            newsrc = window.URL.createObjectURL( blob );
-            if(source.indexOf(".faL")>0){
-          preloadLink.setAttribute("as", "video")
-          preloadLink.href=newsrc
-          NewResourceFlag=false
-         }
-         if(source.indexOf(".jaz")>0){
-           preloadLink.href = newsrc
-           preloadLink.as= "image"
-           NewResourceFlag=false
-         }
-         if(source.indexOf(".faK")>0){
-           preloadLink.href = newsrc
-           preloadLink.setAttribute("as", "audio")
-           NewResourceFlag=false
-         }
+            var newsrc = window.URL.createObjectURL( blob );
+
          };
 
          xmlHTTP.onprogress = function( e ) {
@@ -537,7 +438,21 @@ function SetNextSrc(source){
     xmlHTTP.send();
 
 
-
+         if(source.indexOf(".faL")>0){
+          preloadLink.setAttribute("as", "video")
+          preloadLink.href=newsrc
+          NewResourceFlag=false
+         }
+         if(source.indexOf(".jaz")>0){
+           preloadLink.href = newsrc
+           preloadLink.as= "image"
+           NewResourceFlag=false
+         }
+         if(source.indexOf(".faK")>0){
+           preloadLink.href = newsrc
+           preloadLink.setAttribute("as", "audio")
+           NewResourceFlag=false
+         }
 }
 function NewResourceLoaded(){
   NewResourceFlag=true
@@ -552,7 +467,6 @@ function SetBackground(){
          //console.log(preloadLink.getAttribute("as"))
          if(preloadLink.getAttribute("as")=="video"){
          // console.log("play video")
-         document.getElementById("background").style.backgroundImage = "none"
          document.getElementById("vid").style.display = "block"
          document.addEventListener('keydown', () => { video.play(); })
          video.src = preloadLink.href
@@ -587,6 +501,7 @@ function initialise(){
  if(typeof myObj.LEVELS[0].STEPS[0].TXT !== 'undefined'){
   document.getElementById("Notice").innerHTML = myObj.LEVELS[0].STEPS[0].TXT
  }
+ ImageProgress()
  SetNextSrc(myObj.LEVELS[0].STEPS[0].SRC)
  SetBackground()
  for (i=0; i < myObj.LEVELS.length; i++){
@@ -601,59 +516,59 @@ function initialise(){
 }
 
 //functions to run
-function Tens0On(){
+function S1On(){
   document.getElementById("s1").checked = true
   if(document.getElementById("NoHardware").checked != true){
-    requestHstack.push("http://" + DeviceIP + "/tens0on")
+    requestHstack.push("http://" + DeviceIP + "/s1on")
   }
 }
 
-function Tens0Off(){
+function S1Off(){
   document.getElementById("s1").checked = false
   if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/tens0off")
+  requestHstack.push("http://" + DeviceIP + "/s1off")
 }
 }
 
-function Tens1On(){
+function S2On(){
   document.getElementById("s2").checked = true
   if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/tens1on")
+  requestHstack.push("http://" + DeviceIP + "/s2on")
 }
 }
 
-function Tens1Off(){
+function S2Off(){
   document.getElementById("s2").checked = false
  if(document.getElementById("NoHardware").checked != true){
-   requestHstack.push("http://" + DeviceIP + "/tens1off")
+   requestHstack.push("http://" + DeviceIP + "/s2off")
   }
   }
 
-function Tens2On(){
+function S3On(){
   document.getElementById("s3").checked = true
   if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/tens2on")
+  requestHstack.push("http://" + DeviceIP + "/s3on")
   }
 }
 
-function Tens2Off(){
+function S3Off(){
   document.getElementById("s3").checked = false
  if(document.getElementById("NoHardware").checked != true){
-   requestHstack.push("http://" + DeviceIP + "/tens2off")
+   requestHstack.push("http://" + DeviceIP + "/s3off")
  }
  }
 
-function SqueezeOn(){
+function S4On(){
   document.getElementById("s4").checked = true
   if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/sqzon")
+  requestHstack.push("http://" + DeviceIP + "/s4on")
  }
  }
 
-function SqueezeOff(){
+function S4Off(){
   document.getElementById("s4").checked = false
   if(document.getElementById("NoHardware").checked != true){
-  requestHstack.push("http://" + DeviceIP + "/sqzoff")
+  requestHstack.push("http://" + DeviceIP + "/s4off")
  }
  }
 function PLAYONCEOn(){

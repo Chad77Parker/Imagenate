@@ -10,9 +10,9 @@
         text-shadow: 4px 4px 4px #aaa;
       }
 #FormFooter{
-        position:absolute; top:84%; left:0;
+        position:absolute; bottom:6%; left:0;
  	      width:100%;
-        height:6%;
+        height:3%;
         text-align:center;
         z-index:2;
         font-family: 'Gloria Hallelujah', cursive;
