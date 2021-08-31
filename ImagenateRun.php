@@ -1,17 +1,6 @@
 <?php
-session_start();
 include "Access.php";
-if(isset($_POST['pass'])){
-  $pass = $_POST['pass'];
-}
-if(isset($_SESSION['pass'])){
-  $pass = $_SESSION['pass'];
-}
-if(isset($pass)){
-  if(!accessgrant($pass)){
-  die("no grant access");
-}
-}else{die("no pass access");}
+
 
 //Load file
 $filepath = $_SESSION['uploadfile'];
@@ -49,7 +38,7 @@ Audio:<input type="checkbox" id="AudioOn" onclick="ToggleAudio(this)">
 <select id="ChooseVoice"> </select>
 <input type="button" onclick="ShowHideOutput()" value="Show/Hide Output">
 No Hardware:<input type="checkbox" id="NoHardware">
-Max volts:<input type="range" id="MaxVolts" onchange="setMaxVolts(this)" min="0" max="100" value="60">
+Max volts:<input type="range" id="MaxVolts" onchange="setMaxVolts(this)" min="0" max="255" value="60">
 <input type="button" value="Return Home" onclick="document.forms[0].submit();">
 </div>
 
@@ -60,15 +49,14 @@ Max volts:<input type="range" id="MaxVolts" onchange="setMaxVolts(this)" min="0"
 <div id="output">
 <span id="hour">00</span>:<span id="min">00</span>:<span id="sec">00</span><br>
 <span id="debug"></span><br>
-S1<input type="radio" id="s1" >
-S2<input type="radio" id="s2" >
-S3<input type="radio" id="s3" >
-S4<input type="radio" id="s4" >
+T0<input type="radio" id="s1" >
+T1<input type="radio" id="s2" >
+T2<input type="radio" id="s3" >
+SQZ<input type="radio" id="s4" >
 PUMP<input type="radio" id="pump" >
 VAC<input type="radio" id="vac" >
 <br>
 SV1<input type="range" id="sv1" value=90 max=180> <br>
-SV2<input type="range" id="sv2" value=90 max=180> <br>
 TENS<input type="radio" id="tens" >
 MOD<input type="textbox" id="mod" >
 FREQ<input type="textbox" id="freq" >
@@ -76,8 +64,14 @@ PULSE<input type="textbox" id="pulse" >
 VOLT<input type="textbox" id="volt"><br>
 LOOP ARGS<input type="textbox" id="looptxt">
   <div id="myProgress">
-  <div id="myBar"></div>
+  <div id="myBar"> 0%</div>
   </div>
+< previous level, > next level<br>
+h hold level,     c finish level<br>
+d toggle device,  r toggle repeat<br>
+v toggle voice,   o toggle output<br>
+
+
 </div>
 
 <div id="outputobjects">
@@ -87,7 +81,7 @@ LOOP ARGS<input type="textbox" id="looptxt">
 </div>
 
 <div id="Notice"></div>
-<div id="background"></div>
+<img id="background">
 
 <div id="vid">
 <video autoplay muted loop controls id="myVideo" src="">
@@ -95,7 +89,7 @@ LOOP ARGS<input type="textbox" id="looptxt">
 <iframe src="data/silence.mp3" allow="autoplay" id="audio" style="display:none"></iframe>
 <audio autoplay  id="myAudio" src="" type="audio/mpeg" style="display:none"></audio>
 </div>
-
+<div id="RunningIndicator"></div>
 </body>
 </html>
 

@@ -1,9 +1,6 @@
 <?php
 include "Access.php";
-if(!accessgrant($_POST['pass'])){
-  die("no access");
-}
-session_start();
+
 if (isset($_POST['FileName'])){
    $uploadfile = './uploads/'.$_POST['FileName'].'.json';
 }
@@ -14,8 +11,8 @@ if(isset($_POST['mySelect'])){
 }
 //load filename to session
 $_SESSION['uploadfile'] = $uploadfile;
-$_SESSION['DeviceAddress']=$_POST['deviceaddress'];
-$_SESSION['pass']=$_POST['pass'];
+if (isset($_POST['deviceaddress'])){$_SESSION['DeviceAddress']=$_POST['deviceaddress'];}
+if (isset($_POST['pass'])){$_SESSION['pass']=$_POST['pass'];}
 
 echo '
 
@@ -93,70 +90,6 @@ echo'<div id="controls">File is valid, ready to go.
 
 if(isset($_POST['FileName'])){
  echo '
-<head>
-<title>File Load</title>
-<link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah" rel="stylesheet">
-<link rel="stylesheet" type="text/css"
-          href="https://fonts.googleapis.com/css?family=Tangerine">
-    <style>
-      #Title{
-        position:absolute; top:0; left:0;
- 	      width:100%;
-        height:8%;
-        text-align:center;
-        z-index:5;
-        font-family: "Gloria Hallelujah", cursive;
-        color:red;
-        font-size: 48px;
-        text-shadow: 4px 4px 4px #aaa;
-      }
-      #Notice{
-        position:absolute; bottom:0; left:0;
- 	      width:100%;
-        height:8%;
-        text-align:center;
-        z-index:5;
-        font-family: "Gloria Hallelujah", cursive;
-        color:red;
-        font-size: 48px;
-        text-shadow: 4px 4px 4px #aaa;
-      }
-
-      #controls{
-        position:absolute; bottom:10%; left:20%;
-        z-index:6;
-        width:80%;
-        height:15%;
-        text-align:left;
-        color:red;
-        font-size: 24px;
-        text-shadow: 4px 4px 4px #aaa;
-      }
-      #output{
-        position:absolute; top:15%; left:0;
-        z-index:6;
-        width:33%;
-        height:30%
-      }
-      #background{
-        position:absolute;
-	      background: pink no-repeat fixed center;
-	       background-image: url(img/Backgrounds/PinkBG.jpg);
-         background-repeat: no-repeat;
-         background-attachment: fixed;
-         background-size: contain;
-         background-position: 50% 0%;
-        z-index:1;
-	      width:100%;
-	      height:100%;
-	      top:0;
-	      left:0;
-	      text-align:center;
-      }
-
-    </style>
-</head>
-<body>
 <div id="Title">
 ';
 
@@ -191,10 +124,10 @@ while ($StepCount < count($_POST['Level'])){
   if (isset($_POST['S1'][$StepCount])){
     if($StepCount==0||$_POST['S1'][$StepCount]!=$_POST['S1'][$StepCount-1]){
       if ($_POST['S1'][$StepCount]== "true"){
-            $myString = $myString.'"S1":"ON", ';
+            $myString = $myString.'"TENS0":"ON", ';
             $s1 = "on";
        }else{
-        $myString = $myString.'"S1":"OFF", ';
+        $myString = $myString.'"TENS0":"OFF", ';
         $s1 = "off";
        }
     }
@@ -202,10 +135,10 @@ while ($StepCount < count($_POST['Level'])){
   if (isset($_POST['S2'][$StepCount])){
     if($StepCount==0||$_POST['S2'][$StepCount]!=$_POST['S2'][$StepCount-1]){
       if ($_POST['S2'][$StepCount]== "true"){
-            $myString = $myString.'"S2":"ON", ';
+            $myString = $myString.'"TENS1":"ON", ';
             $s1 = "on";
        }else{
-        $myString = $myString.'"S2":"OFF", ';
+        $myString = $myString.'"TENS1":"OFF", ';
         $s1 = "off";
        }
     }
@@ -213,10 +146,10 @@ while ($StepCount < count($_POST['Level'])){
     if (isset($_POST['S3'][$StepCount])){
       if($StepCount==0||$_POST['S3'][$StepCount]!=$_POST['S3'][$StepCount-1]){
       if ($_POST['S3'][$StepCount]== "true"){
-            $myString = $myString.'"S3":"ON", ';
+            $myString = $myString.'"TENS2":"ON", ';
             $s1 = "on";
        }else{
-        $myString = $myString.'"S3":"OFF", ';
+        $myString = $myString.'"TENS2":"OFF", ';
         $s1 = "off";
        }
     }
@@ -224,10 +157,10 @@ while ($StepCount < count($_POST['Level'])){
     if (isset($_POST['S4'][$StepCount])){
       if($StepCount==0||$_POST['S4'][$StepCount]!=$_POST['S4'][$StepCount-1]){
       if ($_POST['S4'][$StepCount]== "true"){
-            $myString = $myString.'"S4":"ON", ';
+            $myString = $myString.'"SQZ":"ON", ';
             $s1 = "on";
        }else{
-        $myString = $myString.'"S4":"OFF", ';
+        $myString = $myString.'"SQZ":"OFF", ';
         $s1 = "off";
        }
       }
@@ -235,10 +168,6 @@ while ($StepCount < count($_POST['Level'])){
   if ($_POST['Sv1'][$StepCount]!= $sv1){
     $myString = $myString.'"SV1":"'.$_POST['Sv1'][$StepCount].'", ';
      $sv1 = $_POST['Sv1'][$StepCount];
-  }
-  if ($_POST['Sv2'][$StepCount]!= $sv2){
-    $myString = $myString.'"SV2":"'.$_POST['Sv2'][$StepCount].'", ';
-     $sv2 = $_POST['Sv2'][$StepCount];
   }
  if (isset($_POST['Playonce'][$StepCount])){
       if($StepCount==0||$_POST['Playonce'][$StepCount]!=$_POST['Playonce'][$StepCount-1]){
@@ -363,4 +292,28 @@ $somecontent = $myString;
 }
 }
 
+if(isset($_POST['JSONName'])){
+   $filename = ".".$_POST['JSONName'] ;
+   $somecontent = $_POST['JSONString'];
+
+
+    if (!$handle = fopen($filename, 'w')) {
+         echo "Cannot open file ($filename)";
+         exit;
+    }
+
+    // Write $somecontent to our opened file.
+    if (fwrite($handle, $somecontent) === FALSE) {
+        echo "Cannot write to file ($filename)";
+        exit;
+    }
+
+    echo "Success, wrote to file ($filename)<br>";
+    echo 'File is valid, and was successfully uploaded.</div>
+             <div id="controls">
+             Click <a href="Imagenate.php">here</a> to return home
+             </div><div id="background"></div>';
+
+    fclose($handle);
+}
 ?>

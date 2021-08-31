@@ -1,8 +1,6 @@
 <?php
 include "Access.php";
-if(!accessgrant($_POST['pass'])){
-  die("no access");
-}
+
 
 //Load file
 if(isset($_POST['mySelect'])){

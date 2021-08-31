@@ -164,7 +164,9 @@ function TensOn(){
   f = mytextbox.value;
   var mytextbox = document.getElementById("PW");
   pw = mytextbox.value;
-  Url = "http://" + t + "/tenson?m=" + m +"&f=" + f + "&pw=" + pw;
+  var mytextbox = document.getElementById("V");
+  v = mytextbox.value;
+  Url = "http://" + t + "/tenson?m=" + m +"&f=" + f + "&pw=" + pw + "&v=" + v;
   var mytextRequest = document.getElementById( "RequestSent");
   changeTemplate(Url);
   mytextRequest.innerHTML = Url;
@@ -194,6 +196,20 @@ document.getElementById("FreqValue").innerHTML="Frequency("+ document.getElement
 var pwp=document.getElementById("PW").value * 2
 document.getElementById("PWP").value=pwp
 document.getElementById("PWValue").innerHTML="Pulse Width("+ document.getElementById("PW").value+")"
+var vv=document.getElementById("V").value * 4 / 10
+document.getElementById("VV").value=vv
+document.getElementById("VValue").innerHTML="Volts("+ document.getElementById("V").value+")"
+
+}
+
+function setMaxVolts(x){
+  var mytextbox = document.getElementById("DeviceUrl");
+  t = mytextbox.value;
+   Url = "http://" + t + "/tensmaxvolts?v=" + x.value;
+  changeTemplate(Url);
+  var mytextRequest = document.getElementById( "RequestSent");
+  mytextRequest.innerHTML = Url;
+
 
 }
 </script>
@@ -213,7 +229,8 @@ Above Url plus <input type="text" id="VariUrl" value="variable text to append"> 
 Modulation (0 to 255)</p><input type="range" value="128" min="0" max="255" step="1" id="M" onchange=Update()>modulation period in ms<input type="textbox" id="MP">
 <br><p id="FreqValue">Frequency(0 to 255)</p><input type="range" value="128" min="0" max="255" step="1"  id="F" onchange=Update()>frequency in Hz<input type="textbox" id="FH">
 <br><p id="PWValue">Pulse Width(0 to 255)</p><input type="range" value="128" min="0" max="255" step="1" id="PW" onchange=Update()>Pulse width in us<input type="textbox" id="PWP">
-
+<br><p id="VValue">Volts(0 to 255)</p><input type="range" value="128" min="0" max="255" step="1" id="V" onchange=Update()>Volts in volts<input type="textbox" id="VV">
+Max volts:<input type="range" id="MaxVolts" onchange="setMaxVolts(this)" min="0" max="100" value="60">
 <p id="mytemplate" onchange=rxreturn()></p><br>
 <p id="notify"></p>
 

@@ -1,8 +1,6 @@
 <?php
 include "Access.php";
-if(!accessgrant($_POST['pass'])){
-  die("no access");
-}
+
 ?>
 <html>
 <head>
@@ -15,6 +13,7 @@ var preRec=(-1)
 var curRec=0
 var curImg=''
 function upInHTML(mychild){
+  //update values to send with calculated values
   tempid = mychild.id
   if (tempid.search('Modms')>=0){
        tempid = tempid.replace('Modms', 'Mod')
@@ -58,7 +57,6 @@ preRec<0?pump = "false":pump = document.getElementById('Pump_'+preRec).value
 preRec<0?tens = "false":tens = document.getElementById('Tens_'+preRec).value
 preRec<0?playonce = "false":playonce = document.getElementById('Playonce_'+preRec).value
 preRec<0?sv1 = "90":sv1 = document.getElementById('Sv1_'+preRec).value
-preRec<0?sv2 = "90":sv2 = document.getElementById('Sv2_'+preRec).value
 preRec<0?mod = "0":mod = document.getElementById('Mod_'+preRec).value
 preRec<0?freq = "0":freq = document.getElementById('Freq_'+preRec).value
 preRec<0?pulse = "0":pulse = document.getElementById('Pulse_'+preRec).value
@@ -78,13 +76,13 @@ myInHTML=myInHTML+'</td>'
 myInHTML=myInHTML+'<td class="tdclear" rowspan="3">'
 myInHTML=myInHTML+'<img id="pic_'+thisRec+'" class="tableimg">'
 myInHTML=myInHTML+'</td></tr><tr>'
-myInHTML=myInHTML+'<td class="tdclear"><input type="button" value="S1" onclick=SetCol(this,"S1_'+thisRec+'") style="background-color:'+(s1=='false'?'red':'green')+';">'
+myInHTML=myInHTML+'<td class="tdclear"><input type="button" value="T0" onclick=SetCol(this,"S1_'+thisRec+'") style="background-color:'+(s1=='false'?'red':'green')+';">'
 myInHTML=myInHTML+'<input type="hidden" id="S1_'+thisRec+'" name="S1['+thisRec+']" value="'+s1+'" oninput=upInHTML(this)>'
-myInHTML=myInHTML+'<input type="button" value="S2" onclick=SetCol(this,"S2_'+thisRec+'") style="background-color:'+(s2=='false'?'red':'green')+';">'
+myInHTML=myInHTML+'<input type="button" value="T1" onclick=SetCol(this,"S2_'+thisRec+'") style="background-color:'+(s2=='false'?'red':'green')+';">'
 myInHTML=myInHTML+'<input type="hidden" id="S2_'+thisRec+'" name="S2['+thisRec+']" value="'+s2+'" oninput=upInHTML(this)>'
-myInHTML=myInHTML+'<input type="button" value="S3" onclick=SetCol(this,"S3_'+thisRec+'") style="background-color:'+(s3=='false'?'red':'green')+';">'
+myInHTML=myInHTML+'<input type="button" value="T2" onclick=SetCol(this,"S3_'+thisRec+'") style="background-color:'+(s3=='false'?'red':'green')+';">'
 myInHTML=myInHTML+'<input type="hidden" id="S3_'+thisRec+'" name="S3['+thisRec+']" value="'+s3+'" oninput=upInHTML(this)>'
-myInHTML=myInHTML+'<input type="button" value="S4" onclick=SetCol(this,"S4_'+thisRec+'") style="background-color:'+(s4=='false'?'red':'green')+';">'
+myInHTML=myInHTML+'<input type="button" value="SQZ" onclick=SetCol(this,"S4_'+thisRec+'") style="background-color:'+(s4=='false'?'red':'green')+';">'
 myInHTML=myInHTML+'<input type="hidden" id="S4_'+thisRec+'" name="S4['+thisRec+']" value="'+s4+'" oninput=upInHTML(this)>'
 myInHTML=myInHTML+'<input type="button" value="VAC" onclick=SetCol(this,"Vac_'+thisRec+'") style="background-color:'+(vac=='false'?'red':'green')+';">'
 myInHTML=myInHTML+'<input type="hidden" id="Vac_'+thisRec+'" name="Vac['+thisRec+']" value="'+vac+'" oninput=upInHTML(this)>'
@@ -95,7 +93,6 @@ myInHTML=myInHTML+'<input type="hidden" id="Tens_'+thisRec+'" name="Tens['+thisR
 myInHTML=myInHTML+'<input type="button" value="PLAYONCE" onclick=SetCol(this,"Playonce_'+thisRec+'") style="background-color:'+(playonce=='false'?'red':'green')+';">'
 myInHTML=myInHTML+'<input type="hidden" id="Playonce_'+thisRec+'" name="Playonce['+thisRec+']" value="'+playonce+'" oninput=upInHTML(this)>'
 myInHTML=myInHTML+'SV1<input type="range" id="Sv1_'+thisRec+'" name="Sv1['+thisRec+']" value="'+sv1+'" max="180" oninput=upInHTML(this)>'
-myInHTML=myInHTML+'SV2<input type="range" id="Sv2_'+thisRec+'" name="Sv2['+thisRec+']" value="'+sv2+'" min="45" max="75"  oninput=upInHTML(this)>'
 myInHTML=myInHTML+'</tr><tr>'
 myInHTML=myInHTML+'<td class="tdclear">'
 myInHTML=myInHTML+'Modulation(s)<input type="textbox" id="Modms_'+thisRec+'" value="'+modms+'" oninput=upInHTML(this) class="numfield"><input type="hidden" id="Mod_'+thisRec+'" name="Mod['+thisRec+']" class="numfield" value="'+mod+'" oninput=upInHTML(this)>'
@@ -124,6 +121,7 @@ document.getElementById("FormMain").innerHTML+=err.message
 }
 
 function SetCol(btn,Bid){
+  //Set Colour of button
   myBtn = document.getElementById(Bid)
   if(myBtn.value == "true"){
     btn.style.backgroundColor = 'red'
@@ -360,6 +358,7 @@ while(count($images)>$f){
 </div>
 <form action="imagenate.php" method="post">
 <input type="hidden" name="pass" value="<?php echo $_POST['pass'];?>">
+<input type="hidden" name="JSONObject" value="">
 </form>
 <div id="FormFooter"> <input type="button" onclick="AddRecord()" value="Next Step"><input type="submit" onclick="document.forms[0].submit();" />
 <input type="button" value="Return Home" onclick="document.forms[1].submit();">  </div>

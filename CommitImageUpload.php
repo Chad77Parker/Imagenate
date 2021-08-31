@@ -17,6 +17,7 @@ if($_POST['NewUploadFolder']!= "New upload folder" && $_POST['NewUploadFolder']!
 }else{
   $myDir= $_POST['mySelect'];
 }
+
 if ($fn) {
   	// AJAX call
         $newname = cryptfilename($fn);
