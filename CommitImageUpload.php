@@ -22,7 +22,7 @@ if ($fn) {
   	// AJAX call
         $newname = cryptfilename($fn);
         $myBlob = file_get_contents($_FILES['photos']['tmp_name'][0]);
-        $myBlob = cryptfile($myBlob, MainKey);
+        $myBlobEnc = cryptfile($myBlob, MainKey);
 
        	echo "$fn uploaded";
         if(strpos($fn,".mp4")>0){
@@ -30,12 +30,13 @@ if ($fn) {
            file_put_contents('./img/'.$myDir.'/slide/'.$newname, $myBlob );
            echo '<object data="./thumbfromvideo.php?filename=./img/'.$myDir.'/slide/'.$newname.'&thumbpath=./img/'.$myDir.'/thumb"></object>';
         }elseif(strpos($fn,".mp3")>0){
+           //use audio icon for thumbnail
            file_put_contents('./img/'.$myDir.'/slide/'.$newname, $myBlob );
            echo '<img src="./img/Backgrounds/audioicon.jpg">';
            copy("./img/Backgrounds/audioicon.jpg", "./img/".$myDir."/thumb/".$newname.".jpg");
         }else{
            //generate image for slideshow
-           file_put_contents('./img/'.$myDir.'/'.$newname, $myBlob );
+           file_put_contents('./img/'.$myDir.'/'.$newname, $myBlobEnc );
            echo '<img src="image.php?image_name='.$newname.'&style=slide&image_path=img/'.$myDir.'" >';
        	}
         exit();
@@ -50,19 +51,20 @@ else {
 			$fn = $files['name'][$id];
    		$newname = cryptfilename($fn);
       $myBlob = file_get_contents($files['tmp_name'][$id]);
-      $myBlob = cryptfile($myBlob, MainKey);
+      $myBlobEnc = cryptfile($myBlob, MainKey);
       echo "<p>File $fn uploaded.</p>";
       if(strpos($fn,".mp4")>0){
            //generate thumbnail from video
-           file_put_contents('./img/'.$myDir.'/slide/'.$newname, $myBlob );
+           file_put_contents('./img/'.$myDir.'/slide/'.$newname, $myBlobEnc );
            $htmlString += '<object data="./thumbfromvideo.php?filename=./img/'.$myDir.'/slide/'.$newname.'&thumbpath=./img/'.$myDir.'/thumb"></object>';
         }elseif(strpos($fn,".mp3")>0){
+           //use audio icon for thumbnail
            file_put_contents('./img/'.$myDir.'/slide/'.$newname, $myBlob );
            $htmlString += '<img src="./img/Backgrounds/audioicon.jpg">';
            copy("./img/Backgrounds/audioicon.jpg", "./img/".$myDir."/thumb/".$newname.".jpg");
         }else{
            //generate image for slideshow
-           file_put_contents('./img/'.$myDir.'/'.$newname, $myBlob );
+           file_put_contents('./img/'.$myDir.'/'.$newname, $myBlobEnc );
            $htmlString += '<img src="image.php?image_name='.$newname.'&style=slide&image_path=img/'.$myDir.'" >';
        	}
 		}
