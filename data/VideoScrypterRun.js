@@ -21,12 +21,20 @@ var mf=md=pf=pw=v=mfOld=mdOld=pfOld=pwOld=vOld=0
 var NextStepSecs=timeOld=0
 var connection
 var FileSelectClickedFlag=false
-
+var DataRX=true
+var waitTimer
 function initialise(){
 setRanges()
 DeviceIP=document.getElementById("DevIP").value
 if(DeviceIP != "Enter Device IP Address"){
-  connection = new WebSocket('ws://' + DeviceIP + ':81', ['arduino'])
+  startWSConnection()
+}else{
+  document.getElementById("NoHardware").checked=true
+}
+}
+
+function startWSConnection(){
+    connection = new WebSocket('ws://' + DeviceIP + ':81', ['arduino'])
   connection.onopen = function () {
   connection.send('Connect ' + new Date())
   }
@@ -34,19 +42,19 @@ connection.onerror = function (error) {
   console.log('WebSocket Error ', error)
 }
 connection.onmessage = function (e) {
+  DataRx=true
+  clearTimeout(waitTimer)
+  myVideo.play()
   console.log('WebSocket Server: ', e.data)
 }
 connection.onclose = function () {
   myVideo.pause()
   document.getElementById("Pause").value="Start"
   console.log('WebSocket connection closed')
-  alert("Connection with Hardware lost!")
-}
-}else{
-  document.getElementById("NoHardware").checked=true
+  //alert("Connection with Hardware lost!")
+  setTimeout(startWSConnection,500)
 }
 }
-
 //menu and display functions
 function ChangeFile(x){
 FileSelectClickedFlag=false
@@ -247,11 +255,7 @@ function UpdateTime(){
               break;
          default:
          }
-       JSONmessage='{"mf":"'+mf+'","md":"'+md+'","pf":"'+pf+'","pw":"'+pw+'","v":"'+v+'","t":"'+NextStepSecs+'"}'
-       console.log("sent "+JSONmessage+". To be executed by time "+NextStepSecs)
-       if(!document.getElementById("NoHardware").checked){
-         connection.send(JSONmessage)
-       }
+       SendCurrentWSData()
    }
    if(!NextStep && NextStepSecs<myVideo.currentTime){  //check if time has elapsed if there's another step
          NextStep=true
@@ -260,10 +264,20 @@ function UpdateTime(){
 }
 
 function SendCurrentWSData(){
-   JSONmessage='{"mf":"'+mf+'","md":"'+md+'","pf":"'+pf+'","pw":"'+pw+'","v":"'+v+'","t":"0"}'
+   if(DataRX){
+   JSONmessage='{"mf":"'+mf+'","md":"'+md+'","pf":"'+pf+'","pw":"'+pw+'","v":"'+v+'","t":"'+NextStepSecs+'"}'
    console.log("sent "+JSONmessage+". To be executed by time "+NextStepSecs)
    if(!document.getElementById("NoHardware").checked){
      connection.send(JSONmessage)
+   }
+   DataRx=false
+   myVideo=document.getElementById("myVideo")
+   if(!myVideo.paused){
+    myVideo.pause()
+   }
+   }
+   else{
+     waitTimer=setTimeout(SendCurrentWSData,100)
    }
 }
 

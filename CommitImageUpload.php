@@ -55,7 +55,7 @@ else {
       echo "<p>File $fn uploaded.</p>";
       if(strpos($fn,".mp4")>0){
            //generate thumbnail from video
-           file_put_contents('./img/'.$myDir.'/slide/'.$newname, $myBlobEnc );
+           file_put_contents('./img/'.$myDir.'/slide/'.$newname, $myBlob );
            $htmlString += '<object data="./thumbfromvideo.php?filename=./img/'.$myDir.'/slide/'.$newname.'&thumbpath=./img/'.$myDir.'/thumb"></object>';
         }elseif(strpos($fn,".mp3")>0){
            //use audio icon for thumbnail

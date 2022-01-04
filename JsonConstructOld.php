@@ -12,172 +12,6 @@ var thisRec=0
 var preRec=(-1)
 var curRec=0
 var curImg=''
-function updateJSON(){
-  //update JSONtext
-Level = ""
-FirstStep = 1
-s1=s2=s3=s4=vac=playonce=pump=tens='false'
-mod=freq=pulse=volt=sv1=sv2=txt=loop=img=""
-myString = '{"NAME":"'+document.getElementById("Program").value+'", "LEVELS":['
-StepCount = 0
-
-while (StepCount < thisRec){
-  //if new level set
-  if (document.getElementById("Level_"+StepCount).value!=Level){
-       Level=document.getElementById("Level_"+StepCount).value
-       FirstStep = 1;
-       if(StepCount!=0){myString=myString+']},'}
-       myString = myString+'{"TYPE":"'+document.getElementById("Level_"+StepCount).value+'", "REPEAT":"'+document.getElementById("Repeat_"+StepCount).value+'", "STEPS":['
-       //show repeat field
-       document.getElementById("Repeat_"+StepCount).style="display:inline"
-  }else{
-       //hide repeat field
-       document.getElementById("Repeat_"+StepCount).style="display:hidden"
-  }
-  if (FirstStep){
-  myString = myString+'{'
-  FirstStep = 0
-  }else{
-  myString = myString+',{'
-  }
-
-  myString = myString+'"DELAY":"'+document.getElementById("Delay_"+StepCount).value+'", '
-
-
-  if(StepCount==0||document.getElementById("S1_"+StepCount).value!=s1){
-      if (document.getElementById("S1_"+StepCount).value== "true"){
-            myString = myString+'"TENS0":"ON", '
-            s1 = "true"
-       }else{
-        myString = myString+'"TENS0":"OFF", '
-        s1 = "false";
-       }
-    }
-
-  if(StepCount==0||document.getElementById("S2_"+StepCount).value!=s2){
-      if (document.getElementById("S2_"+StepCount).value== "true"){
-            myString = myString+'"TENS1":"ON", '
-            s2 = "true"
-       }else{
-        myString = myString+'"TENS1":"OFF", '
-        s2 = "false";
-       }
-    }
-    if(StepCount==0||document.getElementById("S3_"+StepCount).value!=s3){
-      if (document.getElementById("S3_"+StepCount).value== "true"){
-            myString = myString+'"TENS2":"ON", '
-            s3 = "true"
-       }else{
-        myString = myString+'"TENS2":"OFF", '
-        s3 = "false";
-       }
-    }
-    if(StepCount==0||document.getElementById("S4_"+StepCount).value!=s4){
-      if (document.getElementById("S4_"+StepCount).value== "true"){
-            myString = myString+'"SQZ":"ON", '
-            s4 = "true"
-       }else{
-        myString = myString+'"SQZ":"OFF", '
-        s4 = "false";
-       }
-    }
-    if(StepCount==0||document.getElementById("Sv1_"+StepCount).value!=sv1){
-       myString = myString+'"SV1":"'+document.getElementById("Sv1_"+StepCount).value+'", ';
-       sv1 = document.getElementById("Sv1_"+StepCount).value
-    }
-    if(StepCount==0||document.getElementById("Playonce_"+StepCount).value!=playonce){
-      if (document.getElementById("Playonce_"+StepCount).value== "true"){
-            myString = myString+'"PLAYONCE":"ON", '
-            playonce = "true";
-       }else{
-        myString = myString+'"PLAYONCE":"OFF", '
-        playonce = "false"
-       }
-      }
-
-
-  if (document.getElementById("Notice_"+StepCount).value!= txt){
-    myString = myString+'"TXT":"'+document.getElementById("Notice_"+StepCount).value+'", ';
-    txt = document.getElementById("Notice_"+StepCount).value
-  }
-    if(StepCount==0||document.getElementById("Vac_"+StepCount).value!=vac){
-      if (document.getElementById("Vac_"+StepCount).value== "true"){
-            myString = myString+'"VAC":"ON", '
-            vac = "true"
-       }else{
-        myString = myString+'"VAC":"OFF", '
-        vac = "false";
-       }
-    }
-    if(StepCount==0||document.getElementById("Pump_"+StepCount).value!=pump){
-      if (document.getElementById("Pump_"+StepCount).value== "true"){
-            myString = myString+'"PUMP":"ON", '
-            pump = "true"
-       }else{
-        myString = myString+'"PUMP":"OFF", '
-        pump = "false";
-       }
-    }
-    tensupdate=0;
-
-  if (document.getElementById("Mod_"+StepCount).value!= mod){
-     mod = document.getElementById("Mod_"+StepCount).value
-     tensupdate = 1;
-     tens = "true";
-  }
-  if (document.getElementById("Freq_"+StepCount).value!= freq){
-     freq = document.getElementById("Freq_"+StepCount).value
-     tensupdate = 1;
-     tens = "true";
-  }  if (document.getElementById("Pulse_"+StepCount).value!= pulse){
-     pulse = document.getElementById("Pulse_"+StepCount).value
-     tensupdate = 1;
-     tens = "true";
-  }  if (document.getElementById("Volt_"+StepCount).value!= volt){
-     volt = document.getElementById("Volt_"+StepCount).value
-     tensupdate = 1;
-     tens = "true";
-  }
-
-
-    if(StepCount==0||document.getElementById("Tens_"+StepCount).value!=tens){
-      if (document.getElementById("Tens_"+StepCount).value== "true"){
-            tensupdate=1;
-            tens = "on";
-       }else{
-        tensupdate = 1;
-        tens = "off";
-       }
-      }
-
-
-  if(tensupdate ){
-      if(tens=='on'){myString = myString+'"TENS":"ON", '}
-      else{myString = myString+'"TENS":"OFF", '}
-      myString = myString+'"MOD":"'+mod+'", '
-      myString = myString+'"FREQ":"'+freq+'", '
-      myString = myString+'"PULSE":"'+pulse+'", '
-      myString = myString+'"VOLT":"'+volt+'",'
-  }
-
-
-  if (document.getElementById("Image_"+StepCount).value!=img&&document.getElementById("Image_"+StepCount).value!=""){
-    myString = myString+'"SRC":"'+document.getElementById("Image_"+StepCount).value+'"}'
-    img=document.getElementById("Image_"+StepCount).value
-
-  }else{
-    myString= myString.slice(0,-1)
-    myString = myString+'}'
-}
-StepCount+=1;
-}
-myString = myString+']}]}'
-
-
-  tJSON=document.getElementById("JSONtext")
-  tJSON.value = myString
-
-}
 function upInHTML(mychild){
   //update values to send with calculated values
   tempid = mychild.id
@@ -202,7 +36,7 @@ function upInHTML(mychild){
        document.getElementById(tempid).setAttribute('value',newvalue)
   }
   mychild.setAttribute('value',mychild.value)
-  updateJSON()
+  
 }
 
 function AddRecord(){
@@ -227,6 +61,7 @@ preRec<0?mod = "0":mod = document.getElementById('Mod_'+preRec).value
 preRec<0?freq = "0":freq = document.getElementById('Freq_'+preRec).value
 preRec<0?pulse = "0":pulse = document.getElementById('Pulse_'+preRec).value
 preRec<0?volt = "0":volt = document.getElementById('Volt_'+preRec).value
+preRec<0?largs = "s1onm=0&s1offm=0&s2onm=0&s2offm=0&s3onm=0&s3offm=0&s4onm=0&s4offm=0&vaconm=0&vacoffm=0&pumponm=0&pumpoffm=0&sv1onm=0&sv1onp=0&sv1offm=0&sv1offp=0&loopt=0":largs = document.getElementById('Loop_'+preRec).value
 preRec<0?modms = "0":modms = document.getElementById('Modms_'+preRec).value
 preRec<0?freqhz = "0":freqhz = document.getElementById('Freqhz_'+preRec).value
 preRec<0?pulsepc = "0":pulsepc = document.getElementById('Pulsepc_'+preRec).value
@@ -264,6 +99,7 @@ myInHTML=myInHTML+'Modulation(s)<input type="textbox" id="Modms_'+thisRec+'" val
 myInHTML=myInHTML+'Frequency(Hz)<input type="textbox" id="Freqhz_'+thisRec+'" value="'+freqhz+'" oninput=upInHTML(this) class="numfield"><input type="hidden" id="Freq_'+thisRec+'" name="Freq['+thisRec+']" class="numfield" value="'+freq+'" oninput=upInHTML(this)>'
 myInHTML=myInHTML+'PulseWidth(us)<input type="textbox" id="Pulsepc_'+thisRec+'" value="'+pulsepc+'" oninput=upInHTML(this) class="numfield"><input type="hidden" id="Pulse_'+thisRec+'" name="Pulse['+thisRec+']" class="numfield" value="'+pulse+'" oninput=upInHTML(this)>'
 myInHTML=myInHTML+'Volts(V)<input type="textbox" id="Volts_'+thisRec+'" value="'+volts+'" oninput=upInHTML(this) class="numfield"><input type="hidden" id="Volt_'+thisRec+'" name="Volt['+thisRec+']" class="numfield" value="'+volt+'" oninput=upInHTML(this)>'
+myInHTML=myInHTML+'LoopArgs<input type="textbox" id ="Loop_'+thisRec+'" name="Loop['+thisRec+']" class="remaining" value="'+largs+'" oninput=upInHTML(this)>'
 myInHTML=myInHTML+'<input type="hidden" id="Image_'+thisRec+'" name="Image['+thisRec+']" class="numfield" value="" oninput=upInHTML(this)>'
 myInHTML=myInHTML+'</td>'
 myInHTML=myInHTML+'</table>'
@@ -295,7 +131,6 @@ function SetCol(btn,Bid){
     btn.style.backgroundColor = 'green'
     myBtn.value = "true"
   }
-  updateJSON()
 }
 function  myShow(myObj){
  var x = myObj.querySelectorAll("img")
@@ -383,7 +218,6 @@ myimg.style.border = "5px solid blue"
 curImg = NewImg
 document.getElementById("Image_"+curRec).value = p
 document.getElementById("pic_"+curRec).src = t
-updateJSON()
 }
 
 function UpdateRecords(myRec){
@@ -408,12 +242,11 @@ var hours   = Math.floor(s / 3600);
       result += ":" + (seconds  < 10 ? "0" + seconds : seconds);
 
 document.getElementById("RunTime").value = result
-
 }
 function doc_keyUp(e) {
 
-    // test for ctrl key
-    if (e.keyCode == 17) {
+    // this would test for whichever key is 65 and the ctrl key at the same time
+    if (e.keyCode == 192) {
         // call your function to do the thing
         AddRecord();
     }
@@ -429,9 +262,8 @@ Please Enter in your Program
 <form action="CommitUpload.php" method="post" id="MainForm">
 <div id="FormHeader">
 <input type="hidden" name="pass" value="<?php echo $_POST['pass']; ?>">
-<input type="hidden" name="JSONtext" id="JSONtext" value="">
-FileName:<input type="textbox" id="filename" name="FileName" class="textfield"> </form>
-Program:<input type="textbox" id="Program" name="Program"  class="textfield" oninput=updateJSON()>
+FileName:<input type="textbox" id="filename" name="FileName" class="textfield">
+Program:<input type="textbox" id="Program" name="Program"  class="textfield">
 Running Time: <input type="textbox" id="RunTime" name="RunTime" class="textfield">
 </div>
 <?php
@@ -478,7 +310,7 @@ echo $selectHTML;
 </div>
 <div id="imageselectOverlay" style="display:none; z-index:20"><img id="MainOverlay"></div>
 
-
+</form>
 </div>
 <div id="imageselect">
 <?php
@@ -526,6 +358,7 @@ while(count($images)>$f){
 </div>
 <form action="imagenate.php" method="post">
 <input type="hidden" name="pass" value="<?php echo $_POST['pass'];?>">
+<input type="hidden" name="JSONObject" value="">
 </form>
 <div id="FormFooter"> <input type="button" onclick="AddRecord()" value="Next Step"><input type="submit" onclick="document.forms[0].submit();" />
 <input type="button" value="Return Home" onclick="document.forms[1].submit();">  </div>

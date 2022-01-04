@@ -83,12 +83,7 @@ echo '
 
 if(isset($_FILES) && !(isset($_POST['FileName']))){   //if recieved by imagenate.php
 if(isset($_POST['mySelect'])){
-echo'<div id="controls">File is valid, ready to go. <br>
-Controls:<br>
-< previous level, > next level<br>
-h hold level,     c finish level<br>
-d toggle device,  r toggle repeat<br>
-v toggle voice,   o toggle output<br>
+echo'<div id="controls">File is valid, ready to go.
              Click <a href="ImagenateRun.php">here</a> to RUN
              </div><div id="background"></div>';
 }
@@ -122,7 +117,7 @@ $errorflag=0;
       echo  "Success, wrote to file ($filename)<br>";
       echo 'File is valid, and was successfully uploaded.</div>
              <div id="controls">
-             Click <a href="Imagenate.php">here</a> to return home.
+             Click <a href="ImagenateRun.php">here</a> to RUN
              </div><div id="background"></div>';
 
     fclose($handle);

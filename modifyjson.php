@@ -10,6 +10,7 @@ if(isset($_POST['mySelect'])){
 }
 if (file_exists($filepath)) {
     		$myJSON = file_get_contents($filepath);
+
 //debug print_r($xml);
 	} else {
     		exit('Failed to open file.Name '.$filepath );
@@ -32,8 +33,9 @@ Please Enter in your Program
 <form action="CommitUpload.php" method="post" id="MainForm">
 <div id="FormHeader">
 <input type="hidden" name="pass" value="<?php echo $_POST['pass']; ?>">
-FileName:<input type="textbox" id="filename" name="FileName" class="textfield" value="<?php echo str_replace(".json","",$_POST['mySelect']);?>">
-Program:<input type="textbox" id="Program" name="Program"  class="textfield">
+<input type="hidden" name="JSONtext" id="JSONtext" value="">
+FileName:<input type="textbox" id="filename" name="FileName" class="textfield" value=<?php echo substr($_POST['mySelect'],0,-5);?>> </form>
+Program:<input type="textbox" id="Program" name="Program"  class="textfield" oninput=updateJSON()>
 Running Time: <input type="textbox" id="RunTime" name="RunTime" class="textfield">
 </div>
 <?php
@@ -52,9 +54,9 @@ foreach($dirs as $value){
       $i++;
     }
 
-     if(strpos($images[$f][1],".faL")>0){  //check if file is mp4
-       $image_thumb='img/Backgrounds/movieicon.jpg';
-       $src=$image_thumb;
+      if((strpos($images[$f][1],".faL")>0)&&(strpos($images[$f][1],".jpg")>0)){  //check if file is mp4
+       $image_thumb='img/'.$images[$f][0].'/thumb/'.$images[$f][1];
+       $src='imagedecode.php?filename='.$image_thumb;
      }elseif(strpos($images[$f][1],".faK")>0){  //check if file is mp3
        $image_thumb='img/Backgrounds/audioicon.jpg';
        $src=$image_thumb;
@@ -95,9 +97,9 @@ while(count($images)>$f){
     $style = "thumb";
     $image_thumb = $image_path.'/'.$style.'/'.$image_name;
      if(strpos($images[$f][$i],".faL")>0){  //check if file is mp4
-       $src = 'img/Backgrounds/movieicon.jpg';
+       $src = 'imagedecode.php?filename='.$image_thumb;
        $linksrc = $image_path.'/slide/'.$image_name;
-       $txtoverlay = decryptfilename($image_name);
+      // $txtoverlay = decryptfilename($image_name);
        $image_path = $image_path.'/slide';
      }elseif(strpos($images[$f][$i],".faK")>0){ //check if file is mp3
        $src = 'img/Backgrounds/audioicon.jpg';
